@@ -1,6 +1,6 @@
 // singularity exec ~/Images/CCMadgraph.img make
 // singularity exec ~/Images/CCMadgraph.img ./pythia
-// zcat tsW.hepmc | singularity exec ~/Images/CCMadgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tsW.root -
+// cat tsW.hepmc | singularity exec ~/Images/CCMadgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tsW.root -
 
 #include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/HepMC2.h"
@@ -15,6 +15,7 @@ int main()
 
   pythia.readString("StandardModel:Vtb = 0.0");
   pythia.readString("StandardModel:Vts = 1.0");
+  pythia.readString("StandardModel:Vtd = 0.0");
 
   pythia.readString("Top:gg2ttbar = on");
   pythia.readString("Top:qqbar2ttbar = on");
