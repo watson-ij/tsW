@@ -1,6 +1,6 @@
-// singularity exec ~/Images/CCMadgraph.img make
-// singularity exec ~/Images/CCMadgraph.img ./pythia
-// cat tbW.hepmc | singularity exec ~/Images/CCMadgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tbW.root -
+// singularity exec ~/Images/Madgraph.img make
+// singularity exec ~/Images/Madgraph.img ./pythia
+// cat tbW.hepmc | singularity exec ~/Images/Madgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tbW.root -
 
 #include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/HepMC2.h"

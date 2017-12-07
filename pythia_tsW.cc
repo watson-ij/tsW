@@ -1,6 +1,6 @@
-// singularity exec ~/Images/CCMadgraph.img make
-// singularity exec ~/Images/CCMadgraph.img ./pythia
-// cat tsW.hepmc | singularity exec ~/Images/CCMadgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tsW.root -
+// singularity exec ~/Images/Madgraph.img make
+// singularity exec ~/Images/Madgraph.img ./pythia
+// cat tsW.hepmc | singularity exec ~/Images/Madgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tsW.root -
 
 #include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/HepMC2.h"
@@ -20,7 +20,7 @@ int main()
   pythia.readString("Top:gg2ttbar = on");
   pythia.readString("Top:qqbar2ttbar = on");
 
-  pythia.readString("Main:numberOfEvents = 10000");
+  pythia.readString("Main:numberOfEvents = 100");
 
   pythia.readString("Beams:idA = 2212");
   pythia.readString("Beams:idB = 2212");

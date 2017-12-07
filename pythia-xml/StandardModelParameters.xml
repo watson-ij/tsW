@@ -178,7 +178,7 @@ The <ei>V_cs</ei> CKM matrix element.
 The <ei>V_cb</ei> CKM matrix element. 
 </parm> 
  
-<parm name="StandardModel:Vtd" default="0.00814" min="0.00" max="1.00"> 
+<parm name="StandardModel:Vtd" default="0.00814" min="0.0" max="1.0"> 
 The <ei>V_td</ei> CKM matrix element. 
 </parm> 
  
