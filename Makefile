@@ -7,10 +7,13 @@ pythia_tqW : pythia_tqW.cc
 
 run_s : pythia_tqW
 	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -s -n 50 s.hepmc
+	/code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC delphes_card_CMS.tcl s.root s.hepmc
 run_b : pythia_tqW
 	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -b -n 50 b.hepmc
+	/code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC delphes_card_CMS.tcl b.root b.hepmc
 run_h : pythia_tqW
 	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -h -n 50 h.hepmc
+	/code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC delphes_card_CMS.tcl h.root h.hepmc
 
 pythia_tsW : pythia_tsW.cc
 #	g++ pythia_tsW.cc -o pythia_tsW `/code/MG5_aMC_v2_6_0/HEPTools/pythia8/bin/pythia8-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/HEPTools/hepmc/include -L/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib -lHepMC -ldl
