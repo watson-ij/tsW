@@ -25,8 +25,8 @@ for p in particles:
     for d in decays:
         products = [int(prod) for prod in d.get("products").split(" ") if prod != ""]
         # Find all dipion decays (change as needed)
-        if len(products) == 2 \
-           and abs(products[0]) == 211 and abs(products[1]) == 211:
+        if len(products) == 3 \
+           and abs(products[0]) == 211 and abs(products[1]) == 211  and abs(products[1]) == 211:
             #
-            print p.get("id"), p.get("name"), "mass", p.get("m0")
+            print p.get("id"), p.get("name"), "mass", p.get("m0"), "width", p.get("mWidth"), "bRatio", d.get("bRatio")
 
