@@ -2,14 +2,13 @@
 
 # Run using:
 
-# singularity exec /home/iwatson/Images/CCMadgraph.img make
-# singularity exec /home/iwatson/Images/CCMadgraph.img ./run.sh
-
+# singularity exec -B /home/scratch:/scratch ~iwatson/Images/Madgraph.img make
+# singularity exec -B /home/scratch:/scratch ~iwatson/Images/Madgraph.img ./run.sh
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/code/MG5_aMC_v2_6_0/Delphes
 
 
 #for f in /home/scratch/tsW/*t*; do
-for f in /home/jang00747/tsW/*k.root*; do
+for f in /scratch/tsW/*k.root*; do
     OUT="wj_out_`basename $f`"
     if [[ $f -nt result/`basename $f` ]]; then
         echo "Processing " $f
