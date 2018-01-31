@@ -8,6 +8,7 @@
 
 #include <list>
 #include <ctime>
+#include <stdio.h>
 
 #include <iostream>
 #include <string>
@@ -22,12 +23,16 @@ Double_t getdr(const GenParticle* p1, const GenParticle* p2);
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, size_t iev, const GenParticle* p);
 void histo1D(TClonesArray * jets, TClonesArray * gen_jets, TClonesArray * particles, TClonesArray * electrons, TClonesArray * muons, TFile * out, TTree* trees, int jetpid);
 
-int main()
+int main(int argc, char* argv[])
 {
+
+  auto inf = std::string{argv[1]};
+  auto outf = std::string{argv[2]};
+
   // check cpu time (start)
   std::clock_t c_start = std::clock();
 
-  auto tfiles = TFile::Open("/home/scratch/tsW/tsWbW_100k.root", "READ");
+  auto tfiles = TFile::Open(inf.c_str(), "READ");
 
   auto trees = (TTree*) tfiles->Get("Delphes");
   trees->SetBranchStatus("*", true);
@@ -44,7 +49,7 @@ int main()
   TClonesArray *muons = 0;
   trees->SetBranchAddress("Muon", &muons);
 
-  auto out = TFile::Open("wj_out.root", "RECREATE");
+  auto out = TFile::Open(outf.c_str(), "RECREATE");
   auto outtr = new TTree("tsW", "tsW");
 
 // not complete yet
