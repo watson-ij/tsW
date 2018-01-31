@@ -1,6 +1,10 @@
 # Use singularity image to run make, i.e.
 # singularity ~/Images/Madgraph.img make run_tsW_dilep
 
+
+wj_analysis : wj_analysis.cxx
+	g++ -g -std=c++1y -o wj_analysis wj_analysis.cxx -L/code/MG5_aMC_v2_6_0/Delphes/ -I../../install/include `root-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/Delphes/ -I/code/MG5_aMC_v2_6_0/Delphes/external -lEG -lDelphes
+
 pythia_tqW : pythia_tqW.cc
 #	g++ pythia_tqW.cc -o pythia_tqW `/code/MG5_aMC_v2_6_0/HEPTools/pythia8/bin/pythia8-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/HEPTools/hepmc/include -L/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib -lHepMC -ldl
 	g++ pythia_tqW.cc -std=c++11 -o pythia_tqW  -I/code/MG5_aMC_v2_6_0/HEPTools/hepmc/include  -I/code/MG5_aMC_v2_6_0/HEPTools/pythia8//include -L/code/MG5_aMC_v2_6_0/HEPTools/pythia8//lib -lpythia8 -L/usr/lib -lboost_iostreams -L/code/MG5_aMC_v2_6_0/HEPTools/zlib/lib -lz -L/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib -lHepMC -ldl
