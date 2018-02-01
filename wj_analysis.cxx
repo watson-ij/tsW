@@ -98,6 +98,8 @@ int main(int argc, char* argv[])
 
   //histo_numLepton(electrons,muons,out,trees);
 
+  TH1F * cutflow = new TH1F("cutflow", "cutflow", 10,0,10);
+
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
     trees->GetEntry(iev);
 
@@ -106,13 +108,20 @@ int main(int argc, char* argv[])
     nLepton = 0;
     dilepton_ch = 0;
     nJets = 0;
+
     step = 0;
     step1 = false;
     step2 = false;
     step3 = false;
     step4 = false;
     step5 = false;
-
+/*
+    nParticles = -99;
+    dilepton_mass = -99;
+    nLepton = -99;
+    dilepton_ch = -99;
+    nJets = -99;
+*/
     if (iev%1000 == 0 ) std::cout << "event check    iev    ----> " << iev << std::endl;
     nParticles = particles->GetEntries();
 
@@ -122,6 +131,7 @@ int main(int argc, char* argv[])
 
     recolep.clear();
     selectJets.clear();
+
 
     for (unsigned i = 0; i < muons->GetEntries(); ++i){
       auto mu = (Muon*) muons->At(i);
@@ -216,6 +226,7 @@ int main(int argc, char* argv[])
 	}
       }
     }    
+
     dilepton_mass = dilepton.M();
 
 /*
@@ -256,12 +267,22 @@ int main(int argc, char* argv[])
     outtr->Fill();  
   }
 
-
   //histo1D(jets, gen_jets, particles, electrons, muons, out, trees, 5);
   //histo1D(jets, gen_jets, particles, electrons, muons, out, trees, 3);
 
   tfiles->Close();
   outtr->Write();
+
+  Int_t st;
+  outtr->SetBranchAddress("step", &st);
+  for ( size_t i = 0; i < outtr->GetEntries(); ++i){
+    outtr->GetEntry(i);
+    for( size_t j = 0; j < st; j++){
+      cutflow->Fill(j);
+    }
+  }
+
+  cutflow->Write();
   out->Close();
 
   //check cpu time (end)
