@@ -22,6 +22,14 @@ const GenParticle* getLast(TClonesArray *particles, size_t iev, const GenParticl
 Double_t getdr(const GenParticle* p1, const GenParticle* p2);
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, size_t iev, const GenParticle* p);
 void histo1D(TClonesArray * jets, TClonesArray * gen_jets, TClonesArray * particles, TClonesArray * electrons, TClonesArray * muons, TFile * out, TTree* trees, int jetpid);
+void histo_numLepton(TClonesArray * electrons, TClonesArray * muons, TFile * out, TTree * trees);
+
+// struct for selected leptons
+struct lepton {
+  TLorentzVector tlv;
+  int charge;
+  int pdgid;
+};
 
 int main(int argc, char* argv[])
 {
@@ -49,11 +57,14 @@ int main(int argc, char* argv[])
   TClonesArray *muons = 0;
   trees->SetBranchAddress("Muon", &muons);
 
+  TClonesArray *missing = 0;
+  trees->SetBranchAddress("MissingET", &missing);
+
   auto out = TFile::Open(outf.c_str(), "RECREATE");
   auto outtr = new TTree("tsW", "tsW");
 
 // not complete yet
-/*
+
 #define Branch_(type, name, suffix) type name = 0; outtr->Branch(#name, &name, #name "/" #suffix);
 #define BranchI(name) Branch_(Int_t, name, I)
 #define BranchF(name) Branch_(Float_t, name, F)
@@ -64,16 +75,187 @@ int main(int argc, char* argv[])
 #define BranchAO(name, size) BranchA_(Bool_t, name, size, O);
 #define BranchVF(name) std::vector<float> name; outtr->Branch(#name, "vector<float>", &name);
 #define BranchVI(name) std::vector<int> name; outtr->Branch(#name, "vector<int>", &name);
+#define BranchVO(name) std::vector<bool> name; outtr->Branch(#name, "vector<bool>", &name);
+
+#define BranchP_(type, br, name, suffix) type name = 0; TBranch *br =  outtr->Branch(#name, &name, #name "/" #suffix);
+#define BranchPI(br,name) BranchP_(Int_t, br,name, I);
+#define BranchPF(br,name) BranchP_(Float_t,br, name, F);
+#define BranchPO(br,name) BranchP_(Bool_t,br, name, O);
 
 
-  BranchI(nEvent);
   BranchI(nParticles);
-*/
+  BranchF(dilepton_mass);
+  BranchI(nJets);
 
-  histo1D(jets, gen_jets, particles, electrons, muons, out, trees, 5);
-  histo1D(jets, gen_jets, particles, electrons, muons, out, trees, 3);
+  BranchI(nLepton);
+  BranchI(dilepton_ch);
+
+  BranchI(step);
+  BranchO(step1);
+  BranchO(step2);
+  BranchO(step3);
+  BranchO(step4);
+  BranchO(step5);
+
+  //histo_numLepton(electrons,muons,out,trees);
+
+  for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
+    trees->GetEntry(iev);
+
+    nParticles = 0;
+    dilepton_mass = 0;
+    nLepton = 0;
+    dilepton_ch = 0;
+    nJets = 0;
+    step = 0;
+    step1 = false;
+    step2 = false;
+    step3 = false;
+    step4 = false;
+    step5 = false;
+
+    if (iev%1000 == 0 ) std::cout << "event check    iev    ----> " << iev << std::endl;
+    nParticles = particles->GetEntries();
+
+    // event selection (dilepton channel)
+    std::vector<struct lepton> recolep;
+    std::vector<Jet*> selectJets;
+
+    recolep.clear();
+    selectJets.clear();
+
+    for (unsigned i = 0; i < muons->GetEntries(); ++i){
+      auto mu = (Muon*) muons->At(i);
+      if (abs(mu->Eta) > 2.4) continue;
+      if (mu->PT < 20.) continue;
+      TLorentzVector mu_tlv;
+      mu_tlv = mu->P4();
+
+      struct lepton selmuons;
+      selmuons.tlv = mu_tlv;
+      selmuons.charge = mu->Charge;
+      selmuons.pdgid = 13;
+
+      recolep.push_back(selmuons);
+    }
+    for (unsigned j = 0; j < electrons->GetEntries(); ++j){
+      auto elec = (Electron*) electrons->At(j);
+      if (abs(elec->Eta) > 2.4) continue;
+      if (elec->PT < 20.) continue;
+      TLorentzVector elec_tlv;
+      elec_tlv = elec->P4();
+
+      struct lepton selelecs;
+      selelecs.tlv = elec_tlv;
+      selelecs.charge = elec->Charge;
+      selelecs.pdgid = 11;
+
+      recolep.push_back(selelecs);
+    }
+
+    nLepton = recolep.size(); 
+    if (nLepton < 2 ) {
+      continue;
+    }
+    if(recolep.size() > 2){
+      sort(recolep.begin(), recolep.end(), [](struct lepton a, struct lepton b){return a.tlv.Pt() > b.tlv.Pt();});
+      recolep.erase(recolep.begin()+2,recolep.end());
+    }
+    auto dilepton = recolep[0].tlv + recolep[1].tlv;
+    dilepton_ch = recolep[0].pdgid + recolep[1].pdgid; // 22 -> ee , 24 -> emu , 26 -> mumu
+
+    // step 1
+    if(dilepton.M() < 20. || recolep[0].charge * recolep[1].charge > 0 ) {
+      continue;
+    }
+    step1 = true;
+    step = 1;
+
+    // step2
+    if ( (dilepton_ch == 24) || ( dilepton.M() < 76. || dilepton.M() > 106.) ) {
+      step2 = true;
+      step = 2;
+    }
+
+    // step3
+    auto miss = (MissingET*) missing->At(0);
+    if ( (dilepton_ch == 24) || (miss->MET > 40.) ) {
+      step3 = true;
+      if (step == 2){
+	step = step + 1;
+      }
+    }
+
+    // step4  
+    for ( unsigned k = 0; k < jets->GetEntries(); ++k){
+      auto jet = (Jet*) jets->At(k);
+      TLorentzVector jet_tlv;
+      jet_tlv = jet->P4();
+      bool hasOverLap = false;
+      if (jet->PT < 30.) continue;
+      if (abs(jet->Eta) > 2.4) continue;
+      for( unsigned kk=0; kk < recolep.size(); ++kk){
+	if ( jet_tlv.DeltaR(recolep[kk].tlv) < 0.4) hasOverLap = true;
+      }
+      if (hasOverLap) continue;
+      selectJets.push_back(jet);
+      nJets = nJets + 1;
+    }
+    if (selectJets.size() > 1) {
+      step4 = true;
+      if ( step == 3) {
+        step = step + 1;
+      }
+    }
+
+    // step5
+
+    dilepton_mass = dilepton.M();
+
+/*
+ // event selection from GenParticle (not completed yet)
+    for (unsigned i = 0; i < particles->GetEntries(); ++ i){
+      //std::cout<< "err check 1 " << std::endl;
+      auto p = (const GenParticle*) particles->At(i);
+      //std::cout << "err check 2 p->PID " << p->PID << std::endl;
+
+      if (p->Status > 30) continue;
+      if (abs(p->PID) != 6) continue;
+
+      std::cout << "err check 3 p->PID " << p->PID << std::endl;
+
+      auto lastTop = getLast(particles,iev,p);
+
+      std::cout << "lastTop pdgId " << lastTop->PID << std::endl;
+
+      auto jet = (const GenParticle*) particles->At(lastTop->D2);
+      auto Wboson = ( const GenParticle*) particles->At(lastTop->D1);
+
+      std::cout << "lastTop D1 pdgId " << Wboson->PID << std::endl;
+      std::cout << "lastTop D2 pdgId " << jet->PID << std::endl;
+
+      if (abs(jet->PID) != 5 && abs(jet->PID) != 3 ) continue;
+      if (abs(Wboson->PID) != 24) continue;
+
+      auto lastBoson = getLast(particles, iev, Wboson);
+
+      auto lep1 = (const GenParticle*) particles->At(lastBoson->D1);
+      auto lep2 = (const GenParticle*) particles->At(lastBoson->D2);
+      
+      std::cout << "lepton1 D1 pdgId " << lep1->PID << std::endl;
+      std::cout << "lepton2 D2 pdgId " << lep2->PID << std::endl;
+
+    }
+*/
+    outtr->Fill();  
+  }
+
+
+  //histo1D(jets, gen_jets, particles, electrons, muons, out, trees, 5);
+  //histo1D(jets, gen_jets, particles, electrons, muons, out, trees, 3);
 
   tfiles->Close();
+  outtr->Write();
   out->Close();
 
   //check cpu time (end)
@@ -142,22 +324,6 @@ void histo1D(TClonesArray* jets,TClonesArray * gen_jets,TClonesArray * particles
   TH1D * h9 = new TH1D( h9char, h9char,100,0,1);
   TH1D * h10 = new TH1D( h10char, h10char,1000,0,2000);
   TH1D * h11 = new TH1D( h11char, h11char,100,0,1);
-
-
-/*
-  TH1D * h0 = new TH1D("number of events","number of events",1,0,1);
-  TH1D * h1 = new TH1D("pT ratio Ks","pT ratio Ks",100,0,1);
-  TH1D * h2 = new TH1D("pT ratio lamb","pT ratio lamb",100,0,1);
-  TH1D * h3 = new TH1D("displaced length (rho)","displaced length (rho)",300,0,30);
-  TH1D * h4 = new TH1D("displaced length (r)","displaced length (r)",300,0,30);
-  TH1D * h5 = new TH1D("jet id","jet id",7,0,7);
-  TH1D * h6 = new TH1D("lepton isolation","lepton isolation",200,0,2);
-  TH1D * h7 = new TH1D("lepton in the jet","lepton in the jet",2,0,2);
-  TH1D * h8 = new TH1D("pT ratio lepton","pT ratio lepton",100,0,1);
-  TH1D * h9 = new TH1D("Energy ratio lepton","Energy ratio lepton",100,0,1);
-  TH1D * h10 = new TH1D("dipion mass","dipion mass",1000,0,2000);
-  TH1D * h11 = new TH1D("dipion delta r","dipion delta r",100,0,1);
-*/
 
   for( size_t iev = 0; iev < trees->GetEntries(); ++iev){
     if (iev%100 ==0) std::cout << "event check : " << iev << std::endl;
@@ -239,3 +405,14 @@ void histo1D(TClonesArray* jets,TClonesArray * gen_jets,TClonesArray * particles
   return;
 }
 
+void histo_numLepton(TClonesArray * electrons, TClonesArray * muons, TFile * out, TTree * trees){
+  TH1D * histo_nLepton = new TH1D("nLepton without ev_selection", "nLeptons without event selection", 10, 0, 10);
+  for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
+    if (iev%1000 == 0) std::cout << "Filling histogram for number of leptons..." << iev << std::endl;
+    trees->GetEntry(iev);
+    auto nLepton = muons->GetEntries() + electrons->GetEntries();
+    histo_nLepton->Fill(nLepton);
+  }
+  histo_nLepton->Write();
+  return;
+}
