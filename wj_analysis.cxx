@@ -41,7 +41,6 @@ int main(int argc, char* argv[])
   std::clock_t c_start = std::clock();
 
   auto tfiles = TFile::Open(inf.c_str(), "READ");
-
   auto trees = (TTree*) tfiles->Get("Delphes");
   trees->SetBranchStatus("*", true);
 
@@ -209,7 +208,14 @@ int main(int argc, char* argv[])
     }
 
     // step5
-
+    for (unsigned l = 0; l < selectJets.size(); ++l){
+      if (selectJets[l]->BTag) {
+	step5 = true;
+	if ( step == 4) {
+	  step = step + 1;
+	}
+      }
+    }    
     dilepton_mass = dilepton.M();
 
 /*
