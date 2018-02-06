@@ -10,9 +10,18 @@ Input files from:
 runTheMatrix.py -w 2017 -l 10024.0
 ```
 
-then, copy pythia xml from PYTHIA8DATA setup by CMS, change Vtq min/max and set (with /your/ pythia xml directory):
+This creates the necessary python files, and runs a small sample. When
+you have the python files, add the pythia8 settings into the step1
+GENSIM file.
 
+Then, copy pythia xml from PYTHIA8DATA setup by CMS, change Vtq
+min/max and set (with /your/ pythia xml directory):
+
+```
 export SRT_PYTHIA8DATA_SCRAMRTDEL=/home/iwatson/CMSSW_9_4_0/src/pythia-xml
 export PYTHIA8DATA=/home/iwatson/CMSSW_9_4_0/src/pythia-xml
+```
 
-and then run the commands in `cmdLog`.
+and then run the python files step by step throguh cmsRun (*dont run
+the cmsDriver.py commands*, it overwrites the input files and you'll
+have to add the pythia8 settings back)
