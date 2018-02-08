@@ -5,13 +5,17 @@ date
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_0/src
 eval `scramv1 runtime -sh`
-cd ../..
+cd -
 
 echo "-- Setup CMS environment"
 
-TDIR=`mktemp --tmpdir=result`
-cp *py $TDIR
+mkdir -p result
+TDIR=`mktemp -d --tmpdir=result -t $(date +%Y%m%d_%H%M%S)_XXXXXXXX`
+cp /cms/scratch/iwatson/tsW/cms/*py $TDIR
 cd $TDIR
+
+SRT_PYTHIA8DATA_SCRAMRTDEL=/cms/scratch/iwatson/tsW/pythia-xml
+PYTHIA8DATA=/cms/scratch/iwatson/tsW/pythia-xml
 
 echo "-- Running Step 1"
 cmsRun ./TTbar_13TeV_TuneCUETP8M1_cfi_GEN_SIM.py > step1.log 2>&1
