@@ -1,3 +1,5 @@
+* Running CMSSW production
+
 Find workflow numbers
 
 ```
@@ -22,6 +24,25 @@ export SRT_PYTHIA8DATA_SCRAMRTDEL=/home/iwatson/CMSSW_9_4_0/src/pythia-xml
 export PYTHIA8DATA=/home/iwatson/CMSSW_9_4_0/src/pythia-xml
 ```
 
+(or set it in $CMSSW_BASE/config/toolbox/slc6_amd64_gcc630/tools/selected/pythia8.xml)
+
 and then run the python files step by step throguh cmsRun (*dont run
 the cmsDriver.py commands*, it overwrites the input files and you'll
 have to add the pythia8 settings back)
+
+* Setting up CMSSW for NanoAOD
+
+cmsrel CMSSW_9_4_0
+cd CMSSW_9_4_0/src
+cmsenv
+git-cms-init -q
+git cms-merge-topic cms-nanoAOD:master
+git checkout -b nanoAOD cms-nanoAOD/master
+git clone https://github.com/cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
+git clone git@github.com:watson-ij/nano.git
+scram b -j 20
+
+# Create the driver script nanoAOD_NANO.py
+cmsDriver.py nanoAOD -s NANO --mc --customise nano/nanoAOD/nano_cff.customise --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc --era Run2_2017 --no_exec
+# Change the input file to whatever you are running
+cmsRun nanoAOD_NANO.py
