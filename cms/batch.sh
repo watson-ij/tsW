@@ -9,14 +9,15 @@ cd -
 
 echo "-- Setup CMS environment"
 
-mkdir -p result
-TDIR=`mktemp -d --tmpdir=result -t $(date +%Y%m%d_%H%M%S)_XXXXXXXX`
+TDIR=./result/`date +%Y%m%d_%H%M%S`
+mkdir -p $TDIR
 cp /cms/scratch/iwatson/tsW/cms/*py $TDIR
 cd $TDIR
 
 SRT_PYTHIA8DATA_SCRAMRTDEL=/cms/scratch/iwatson/tsW/pythia-xml
 PYTHIA8DATA=/cms/scratch/iwatson/tsW/pythia-xml
 
+pwd
 echo "-- Running Step 1"
 cmsRun ./TTbar_13TeV_TuneCUETP8M1_cfi_GEN_SIM.py > step1.log 2>&1
 echo "-- Running Step 2"

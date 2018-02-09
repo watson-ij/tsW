@@ -7,7 +7,7 @@ ROOT.gSystem.Load("libPhysicsToolsFWLite.so")
 ROOT.gSystem.Load("libDataFormatsFWLite.so")
 ROOT.FWLiteEnabler.enable()
 
-f = TFile("result/tmp.djMzv2e7Ml/step3_inMINIAODSIM.root")
+f = TFile("result/20180209_123318/step3_inMINIAODSIM.root")
 
 isS = None
 for i in range(f.Events.GetEntries()):
@@ -34,13 +34,15 @@ for i in range(f.Events.GetEntries()):
     # EDM
     # KS = f.Events.recoVertexCompositeCandidates_generalV0Candidates_Kshort_RECO.product()
     # MiniAOD
+    nKSL = 0
     KS = f.Events.recoVertexCompositePtrCandidates_slimmedKshortVertices__RECO.product()
     TLk = TLorentzVector()
     for k in KS:
         k = k.p4()
         TLk.SetPtEtaPhiE(k.pt(), k.eta(), k.phi(), k.e())
         if TLk.DeltaR(TLs4) < 0.5:
-            print "Match K", k.pt() / s4.pt(), k.mass()
+            print "Match K", k.pt() / s4.pt(), k.mass(), isS
+            nKSL += 1
     # EDM
     # Lam = f.Events.recoVertexCompositeCandidates_generalV0Candidates_Lambda_RECO.product()
     # MiniAOD
@@ -49,5 +51,6 @@ for i in range(f.Events.GetEntries()):
         k = k.p4()
         TLk.SetPtEtaPhiE(k.pt(), k.eta(), k.phi(), k.e())
         if TLk.DeltaR(TLs4) < 0.5:
-            print "Match L", k.pt() / s4.pt(), k.mass()
-    
+            print "Match L", k.pt() / s4.pt(), k.mass(), isS
+            nKSL += 1
+    if nKSL > 0: print "Total KS/Lambda: ", nKSL
