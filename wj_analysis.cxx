@@ -273,6 +273,14 @@ void genParticle(){
         auto outR = sqrt(pow(kshortDau->X,2)+pow(kshortDau->Y,2)+pow(kshortDau->Z,2));
         kshortsInjet_outR.push_back(outR);
       }
+      else {
+        kshortsInjet_pt.push_back(-99);
+        kshortsInjet_eta.push_back(-99);
+        kshortsInjet_phi.push_back(-99);
+        kshortsInjet_energy.push_back(-99);
+        kshortsInjet_R.push_back(-99);
+        kshortsInjet_outR.push_back(-99);
+      }
 
       // save highest pT lambda only
       nlambdasInjet.push_back(lambdasInjet.size());
@@ -289,6 +297,14 @@ void genParticle(){
         auto outR = sqrt(pow(lambdaDau->X,2)+pow(lambdaDau->Y,2)+pow(lambdaDau->Z,2));
         lambdasInjet_outR.push_back(outR);
       }
+      else {
+        lambdasInjet_pt.push_back(-99);
+        lambdasInjet_eta.push_back(-99);
+        lambdasInjet_phi.push_back(-99);
+        lambdasInjet_energy.push_back(-99);
+        lambdasInjet_R.push_back(-99);
+        lambdasInjet_outR.push_back(-99);
+      }
 
       // save highest pT lepton only
       nleptonsInjet.push_back(leptonsInjet.size());
@@ -300,6 +316,13 @@ void genParticle(){
         leptonsInjet_energy.push_back(leptonsInjet[0].E);
         auto R = sqrt(pow(leptonsInjet[0].X,2)+pow(leptonsInjet[0].Y,2)+pow(leptonsInjet[0].Z,2));
         leptonsInjet_R.push_back(R);
+      }
+      else {
+        leptonsInjet_pt.push_back(-99);
+        leptonsInjet_eta.push_back(-99);
+        leptonsInjet_phi.push_back(-99);
+        leptonsInjet_energy.push_back(-99);
+        leptonsInjet_R.push_back(-99);
       }
 
       std::vector<float> diHadron_mass;
