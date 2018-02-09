@@ -24,6 +24,7 @@ echo "-- Running Step 2"
 cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT.py > step2.log 2>&1
 echo "-- Running Step 3"
 cmsRun ./step3_RAW2DIGI_L1Reco_RECO_RECOSIM_EI_PAT_VALIDATION_DQM.py > step3.log 2>&1
-
+echo "-- Running NanoAOD"
+cmsRun nanoAOD_NANO.py
 echo "-- Done."
 date
