@@ -126,8 +126,8 @@ void initValues(){
 
     kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear();
     lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear();
-    leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear();
-    nkshortsInjet.clear(); nleptonsInjet.clear();
+    leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
+    nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
 
     jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
 }
