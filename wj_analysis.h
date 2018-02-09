@@ -8,6 +8,7 @@ struct Lepton {
 //read
 TClonesArray *gen_jets = 0, *particles = 0;
 TClonesArray *electrons = 0, *muons = 0, *jets = 0, *missingET = 0;
+TClonesArray *tracks = 0;
 
 //write
 float dilepton_mass;
@@ -18,10 +19,11 @@ bool gen_step0, gen_step1;
 std::vector<float> jet_pt, jet_eta, jet_phi, jet_energy;
 std::vector<int> jet_pid;
 
-std::vector<float> kshortsInjet_pt, kshortsInjet_eta, kshortsInjet_phi, kshortsInjet_energy;
-std::vector<float> leptonsInjet_pt, leptonsInjet_eta, leptonsInjet_phi, leptonsInjet_energy;
+std::vector<float> kshortsInjet_pt, kshortsInjet_eta, kshortsInjet_phi, kshortsInjet_energy, kshortsInjet_R, kshortsInjet_outR;
+std::vector<float> lambdasInjet_pt, lambdasInjet_eta, lambdasInjet_phi, lambdasInjet_energy, lambdasInjet_R, lambdasInjet_outR;
+std::vector<float> leptonsInjet_pt, leptonsInjet_eta, leptonsInjet_phi, leptonsInjet_energy, leptonsInjet_R;
 std::vector<float> jet1_diHadron_mass, jet2_diHadron_mass;
-std::vector<int> nkshortsInjet, nleptonsInjet;
+std::vector<int> nkshortsInjet, nlambdasInjet, nleptonsInjet;
 
 // define functions
 struct Lepton toLepton(Muon* p){ struct Lepton l; l.tlv = p->P4(); l.charge = p->Charge; l.pdgid=11*(p->Charge); return l;}
@@ -70,6 +72,7 @@ const GenParticle* getLast(TClonesArray * particles, const GenParticle* p){
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, const GenParticle* p){
   std::vector<const GenParticle*> mlst;
   auto idx = p->M1;
+  if (idx == -1) return mlst;
   while(true){
     auto m = (const GenParticle*)particles->At(idx);
     mlst.push_back(m);

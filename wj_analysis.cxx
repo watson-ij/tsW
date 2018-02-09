@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("Muon",        &muons);
   trees->SetBranchAddress("Jet",         &jets);
   trees->SetBranchAddress("MissingET",   &missingET);
+  trees->SetBranchAddress("Track",       &tracks);
 
   //make out file
   auto out = TFile::Open(outf.c_str(), "RECREATE");
@@ -51,13 +52,24 @@ int main(int argc, char* argv[])
   outtr->Branch("kshortsInjet_eta", "vector<float>", &kshortsInjet_eta);
   outtr->Branch("kshortsInjet_phi", "vector<float>", &kshortsInjet_phi);
   outtr->Branch("kshortsInjet_energy", "vector<float>", &kshortsInjet_energy);
+  outtr->Branch("kshortsInjet_R", "vector<float>", &kshortsInjet_R);
+  outtr->Branch("kshortsInjet_outR", "vector<float>", &kshortsInjet_outR);
+
+  outtr->Branch("lambdasInjet_pt", "vector<float>", &lambdasInjet_pt);
+  outtr->Branch("lambdasInjet_eta", "vector<float>", &lambdasInjet_eta);
+  outtr->Branch("lambdasInjet_phi", "vector<float>", &lambdasInjet_phi);
+  outtr->Branch("lambdasInjet_energy", "vector<float>", &lambdasInjet_energy);
+  outtr->Branch("lambdasInjet_R", "vector<float>", &lambdasInjet_R);
+  outtr->Branch("lambdasInjet_outR", "vector<float>", &lambdasInjet_outR);
 
   outtr->Branch("leptonsInjet_pt", "vector<float>", &leptonsInjet_pt);
   outtr->Branch("leptonsInjet_eta", "vector<float>", &leptonsInjet_eta);
   outtr->Branch("leptonsInjet_phi", "vector<float>", &leptonsInjet_phi);
   outtr->Branch("leptonsInjet_energy", "vector<float>", &leptonsInjet_energy);
+  outtr->Branch("leptonsInjet_R", "vector<float>", &leptonsInjet_R);
 
   outtr->Branch("nkshortsInjet", "vector<int>", &nkshortsInjet);
+  outtr->Branch("nlambdasInjet", "vector<int>", &nlambdasInjet);
   outtr->Branch("nleptonsInjet", "vector<int>", &nleptonsInjet);
 
   outtr->Branch("jet1_diHadron_mass", "vector<float>", &jet1_diHadron_mass);
@@ -71,6 +83,22 @@ int main(int argc, char* argv[])
 
     recoParticle();
     genParticle();
+
+    /*
+    // pion track test
+    for (unsigned i = 0; i < tracks->GetEntries(); ++ i){
+      auto track = (Track*) tracks->At(i);
+      if (abs(track->PID) == 321){
+        auto genTrack = (GenParticle*) track->Particle.GetObject();
+        auto genTrack_mom = (const GenParticle*) particles->At(genTrack->M1);
+        std::cout << genTrack_mom->PID << std::endl;
+        float pionR = sqrt(pow(track->X,2)+pow(track->Y,2)+pow(track->Z,2));
+        float pionRd = sqrt(pow(track->Xd,2)+pow(track->Yd,2)+pow(track->Zd,2));
+        float pionROuter = sqrt(pow(track->XOuter,2)+pow(track->YOuter,2)+pow(track->ZOuter,2));
+      }
+    }
+    */
+
     outtr->Fill();  
   }
 
@@ -96,7 +124,8 @@ void initValues(){
     jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
     jet_pid.clear();
 
-    kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear();
+    kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear();
+    lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear();
     leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear();
     nkshortsInjet.clear(); nleptonsInjet.clear();
 
@@ -198,7 +227,7 @@ void genParticle(){
         bool fromJet = false;
         std::vector<const GenParticle*> mlist = getMlist(particles, p2);
         for (auto m : mlist){ if (m == jet) fromJet = true; }
-        if (fromJet) continue;
+        if (!fromJet) continue;
         
         jetConstitues.push_back(*p2);
       }
@@ -237,6 +266,28 @@ void genParticle(){
         kshortsInjet_eta.push_back(kshortsInjet[0].Eta);
         kshortsInjet_phi.push_back(kshortsInjet[0].Phi);
         kshortsInjet_energy.push_back(kshortsInjet[0].E);
+        auto R = sqrt(pow(kshortsInjet[0].X,2)+pow(kshortsInjet[0].Y,2)+pow(kshortsInjet[0].Z,2));
+        kshortsInjet_R.push_back(R);
+
+        auto kshortDau = (const GenParticle*) particles->At(kshortsInjet[0].D1);
+        auto outR = sqrt(pow(kshortDau->X,2)+pow(kshortDau->Y,2)+pow(kshortDau->Z,2));
+        kshortsInjet_outR.push_back(outR);
+      }
+
+      // save highest pT lambda only
+      nlambdasInjet.push_back(lambdasInjet.size());
+      if (lambdasInjet.size() >0){
+        sort(lambdasInjet.begin(), lambdasInjet.end(), [](GenParticle a, GenParticle b){return a.PT > b.PT;});
+        lambdasInjet_pt.push_back(lambdasInjet[0].PT);
+        lambdasInjet_eta.push_back(lambdasInjet[0].Eta);
+        lambdasInjet_phi.push_back(lambdasInjet[0].Phi);
+        lambdasInjet_energy.push_back(lambdasInjet[0].E);
+        auto R = sqrt(pow(lambdasInjet[0].X,2)+pow(lambdasInjet[0].Y,2)+pow(lambdasInjet[0].Z,2));
+        lambdasInjet_R.push_back(R);
+
+        auto lambdaDau = (const GenParticle*) particles->At(lambdasInjet[0].D1);
+        auto outR = sqrt(pow(lambdaDau->X,2)+pow(lambdaDau->Y,2)+pow(lambdaDau->Z,2));
+        lambdasInjet_outR.push_back(outR);
       }
 
       // save highest pT lepton only
@@ -247,9 +298,28 @@ void genParticle(){
         leptonsInjet_eta.push_back(leptonsInjet[0].Eta);
         leptonsInjet_phi.push_back(leptonsInjet[0].Phi);
         leptonsInjet_energy.push_back(leptonsInjet[0].E);
+        auto R = sqrt(pow(leptonsInjet[0].X,2)+pow(leptonsInjet[0].Y,2)+pow(leptonsInjet[0].Z,2));
+        leptonsInjet_R.push_back(R);
       }
 
-      jet_diHadron_mass.push_back(collectHadron(jetConstitues, false));
+      std::vector<float> diHadron_mass;
+      if (hadronsInjet.size() >= 2){
+        //std::vector<float> diHadron_energy;
+        //std::vector<bool> diHadron_sameMother;
+        for (unsigned ih1 = 0; ih1 < hadronsInjet.size(); ++ih1){
+          auto hadron1 = hadronsInjet[ih1].P4();
+          for (unsigned ih2 = 0; ih2 < hadronsInjet.size(); ++ih2){
+            if (ih1 >= ih2) continue;
+            auto hadron2 = hadronsInjet[ih2].P4();
+
+            auto diHadron = hadron1+hadron2;
+            diHadron_mass.push_back(diHadron.M());
+            //diHadron_energy.push_back(diHadron.E());
+            //diHadron_sameMother.push_back(hadronsInjet[ih1].M1 == hadronsInjet[ih2].M1 );
+          }
+        }
+      }
+      jet_diHadron_mass.push_back(diHadron_mass);
 
     }
 
@@ -269,18 +339,4 @@ void genParticle(){
 }
 
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck){
-    if (hadronsInjet.size() < 2) return std::vector<float>();
-    std::vector<float> diHadron_mass;
-    for (unsigned ih1 = 0; ih1 < hadronsInjet.size(); ++ih1){
-      auto hadron1 = hadronsInjet[ih1].P4();
-      for (unsigned ih2 = 0; ih2 < hadronsInjet.size(); ++ih2){
-        if (ih1 >= ih2) continue;
-        auto hadron2 = hadronsInjet[ih2].P4();
-
-        auto diHadron = hadron1+hadron2;
-        if (!motherCheck) diHadron_mass.push_back(diHadron.M());
-        if (motherCheck && (hadronsInjet[ih1].M1 == hadronsInjet[ih2].M1) ) diHadron_mass.push_back(diHadron.M());
-      }
-    }
-    return diHadron_mass;
 }
