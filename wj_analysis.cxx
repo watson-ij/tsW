@@ -34,46 +34,7 @@ int main(int argc, char* argv[])
   auto out = TFile::Open(outf.c_str(), "RECREATE");
   auto outtr = new TTree("tsW", "tsW");
 
-  defBranchFucns();
-  outtr->Branch("dilepton_mass", &dilepton_mass, "dilepton_mass/F");
-  outtr->Branch("dilepton_ch", &dilepton_ch, "dilepton_ch/I");
-  outtr->Branch("step", &step, "step/I");
-
-  outtr->Branch("gen_step0", &gen_step0, "gen_step0/O");
-  outtr->Branch("gen_step1", &gen_step1, "gen_step1/O");
-
-  outtr->Branch("jet_pt", "vector<float>", &jet_pt);
-  outtr->Branch("jet_eta", "vector<float>", &jet_eta);
-  outtr->Branch("jet_phi", "vector<float>", &jet_phi);
-  outtr->Branch("jet_energy", "vector<float>", &jet_energy);
-  outtr->Branch("jet_pid", "vector<int>", &jet_pid);
-
-  outtr->Branch("kshortsInjet_pt", "vector<float>", &kshortsInjet_pt);
-  outtr->Branch("kshortsInjet_eta", "vector<float>", &kshortsInjet_eta);
-  outtr->Branch("kshortsInjet_phi", "vector<float>", &kshortsInjet_phi);
-  outtr->Branch("kshortsInjet_energy", "vector<float>", &kshortsInjet_energy);
-  outtr->Branch("kshortsInjet_R", "vector<float>", &kshortsInjet_R);
-  outtr->Branch("kshortsInjet_outR", "vector<float>", &kshortsInjet_outR);
-
-  outtr->Branch("lambdasInjet_pt", "vector<float>", &lambdasInjet_pt);
-  outtr->Branch("lambdasInjet_eta", "vector<float>", &lambdasInjet_eta);
-  outtr->Branch("lambdasInjet_phi", "vector<float>", &lambdasInjet_phi);
-  outtr->Branch("lambdasInjet_energy", "vector<float>", &lambdasInjet_energy);
-  outtr->Branch("lambdasInjet_R", "vector<float>", &lambdasInjet_R);
-  outtr->Branch("lambdasInjet_outR", "vector<float>", &lambdasInjet_outR);
-
-  outtr->Branch("leptonsInjet_pt", "vector<float>", &leptonsInjet_pt);
-  outtr->Branch("leptonsInjet_eta", "vector<float>", &leptonsInjet_eta);
-  outtr->Branch("leptonsInjet_phi", "vector<float>", &leptonsInjet_phi);
-  outtr->Branch("leptonsInjet_energy", "vector<float>", &leptonsInjet_energy);
-  outtr->Branch("leptonsInjet_R", "vector<float>", &leptonsInjet_R);
-
-  outtr->Branch("nkshortsInjet", "vector<int>", &nkshortsInjet);
-  outtr->Branch("nlambdasInjet", "vector<int>", &nlambdasInjet);
-  outtr->Branch("nleptonsInjet", "vector<int>", &nleptonsInjet);
-
-  outtr->Branch("jet1_diHadron_mass", "vector<float>", &jet1_diHadron_mass);
-  outtr->Branch("jet2_diHadron_mass", "vector<float>", &jet2_diHadron_mass);
+  defBranchFucns(outtr);
 
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
