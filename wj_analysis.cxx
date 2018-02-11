@@ -115,8 +115,10 @@ void recoParticle(){
     recolep.erase(recolep.begin()+2,recolep.end());
 
     auto dilepton = recolep[0].tlv + recolep[1].tlv;
-    dilepton_ch = recolep[0].pdgid + recolep[1].pdgid; // 22 -> ee , 24 -> emu , 26 -> mumu
+    dilepton_ch = abs(recolep[0].pdgid) + abs(recolep[1].pdgid); // 22 -> ee , 24 -> emu , 26 -> mumu
     dilepton_mass = dilepton.M();
+
+    std::cout << "dilepton ch check : " << dilepton_ch << std::endl;
 
     // step 1
     if(dilepton.M() > 20. && recolep[0].charge * recolep[1].charge < 0 ) { step++; }
