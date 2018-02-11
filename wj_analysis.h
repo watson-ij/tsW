@@ -21,7 +21,8 @@ std::vector<int> jet_pid;
 
 std::vector<float> kshortsInjet_pt, kshortsInjet_eta, kshortsInjet_phi, kshortsInjet_energy, kshortsInjet_R, kshortsInjet_outR;
 std::vector<float> lambdasInjet_pt, lambdasInjet_eta, lambdasInjet_phi, lambdasInjet_energy, lambdasInjet_R, lambdasInjet_outR;
-std::vector<float> leptonsInjet_pt, leptonsInjet_eta, leptonsInjet_phi, leptonsInjet_energy, leptonsInjet_R;
+std::vector<float> leptonsInjet_pt, leptonsInjet_eta, leptonsInjet_phi, leptonsInjet_energy, leptonsInjet_R, leptonsInjet_outR;
+
 std::vector<float> jet1_diHadron_mass, jet2_diHadron_mass;
 std::vector<int> nkshortsInjet, nlambdasInjet, nleptonsInjet;
 
