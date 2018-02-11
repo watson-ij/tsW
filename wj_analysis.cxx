@@ -36,13 +36,16 @@ int main(int argc, char* argv[])
 
   defBranchFucns(outtr);
 
+  TString cutflow_title = "cutflow" + inf;
+  TH1F * cutflow = new TH1F("cutflow", cutflow_title, 7,-1,6); // -1 : all events, 0 : events after lepton selection, 1~ : events after step
+
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
     if (iev%1000 == 0 ) std::cout << "event check    iev    ----> " << iev << std::endl;
     trees->GetEntry(iev);
     initValues();
 
-    recoParticle();
+    recoParticle(cutflow);
     genParticle();
 
     /*
@@ -62,9 +65,9 @@ int main(int argc, char* argv[])
 
     outtr->Fill();  
   }
-
   tfiles->Close();
   outtr->Write();
+  cutflow->Write();
 
   out->Close();
 
@@ -78,7 +81,7 @@ int main(int argc, char* argv[])
 
 void initValues(){
     dilepton_mass = -99;
-    dilepton_ch = 0; step = 0;
+    dilepton_ch = 0; 
 
     gen_step0 = false; gen_step1 = false;
 
@@ -93,7 +96,8 @@ void initValues(){
     jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
 }
 
-void recoParticle(){
+void recoParticle(TH1F * cutflow){
+    cutflow->Fill(-1);
     // object selection
     std::vector<struct Lepton> recolep;
     for (unsigned i = 0; i < muons->GetEntries(); ++i){
@@ -111,22 +115,28 @@ void recoParticle(){
 
     // pick highest pt lep pair
     if (recolep.size() < 2 ) return;
+
     sort(recolep.begin(), recolep.end(), [](struct Lepton a, struct Lepton b){return a.tlv.Pt() > b.tlv.Pt();});
     recolep.erase(recolep.begin()+2,recolep.end());
+
+    cutflow->Fill(0);
 
     auto dilepton = recolep[0].tlv + recolep[1].tlv;
     dilepton_ch = abs(recolep[0].pdgid) + abs(recolep[1].pdgid); // 22 -> ee , 24 -> emu , 26 -> mumu
     dilepton_mass = dilepton.M();
 
     // step 1
-    if(dilepton.M() > 20. && recolep[0].charge * recolep[1].charge < 0 ) { step++; }
+    if(dilepton.M() < 20. || recolep[0].charge * recolep[1].charge > 0 ) return;
+    cutflow->Fill(1);
 
     // step2
-    if ( (dilepton_ch == 24) || ( dilepton.M() < 76. || dilepton.M() > 106.) ) { if (step == 1) step++; }
+    if ( (dilepton_ch != 24) && ( dilepton.M() > 76. && dilepton.M() < 106.) ) return;
+    cutflow->Fill(2);
 
     // step3
     auto met = ((MissingET*) missingET->At(0))->MET;
-    if ( (dilepton_ch == 24) || (met > 40.) ) { if (step == 2) step++; }
+    if ( (dilepton_ch != 24) && (met < 40.) ) return;
+    cutflow->Fill(3);
 
     // step4  
     std::vector<Jet*> selectedJets;
@@ -139,14 +149,17 @@ void recoParticle(){
       if (hasOverlap) continue;
       selectedJets.push_back(jet);
     }
-    if (selectedJets.size() > 1) { if ( step == 3) step++; }
+    if (selectedJets.size() < 2) return;
+    cutflow->Fill(4);
 
     // step5
     std::vector<Jet*> selectedBJets;
     for (auto jet : selectedJets){
       if (jet->BTag) selectedBJets.push_back(jet);
     }
-    if (selectedBJets.size() > 0){ if ( step == 4) step++; }
+    if (selectedBJets.size() < 1) return;
+    cutflow->Fill(5);
+
 }
 
 void genParticle(){

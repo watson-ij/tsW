@@ -36,7 +36,7 @@ void defBrancheFucns(TTree* outtr);
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p);
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, const GenParticle* p);
 void initValues();
-void recoParticle();
+void recoParticle(TH1F*);
 void genParticle();
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck);
 
