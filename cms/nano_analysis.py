@@ -4,8 +4,9 @@ import ROOT
 from ROOT import TFile, TCanvas, TTree, TH1F
 from math import hypot, pi
 
-f = TFile("nanoAOD.root")
-# f.Events.Print()
+f = TFile("result/20180212_135259_wn4045.sdfarm.kr_tbW/nanoAOD.root")
+f = TFile("result/20180212_135216_wn4045.sdfarm.kr_tsW/nanoAOD.root")
+# # f.Events.Print()
 
 def deltaPhi(phi1,phi2):
     ## Catch if being called with two objects
@@ -26,16 +27,30 @@ def deltaR(eta1,phi1,eta2=None,phi2=None):
     ## otherwise
     return hypot(eta1-eta2, deltaPhi(phi1,phi2))
 
+nS = 0; nSM = 0
+nB = 0; nBM = 0
 for e in f.Events:
     q, qb = None, None
+    isS = False
     for j in xrange(f.Events.nGenPart):
-        if 20 < f.Events.GenPart_status[j] < 30 and f.Events.GenPart_pdgId[j] == 3:  q = j
+        if 20 < f.Events.GenPart_status[j] < 30 and f.Events.GenPart_pdgId[j] == 3:  q = j; nS += 1; isS = True
         if 20 < f.Events.GenPart_status[j] < 30 and f.Events.GenPart_pdgId[j] == -3: qb = j
+        if 20 < f.Events.GenPart_status[j] < 30 and f.Events.GenPart_pdgId[j] == 5:  q = j; nB += 1
+        if 20 < f.Events.GenPart_status[j] < 30 and f.Events.GenPart_pdgId[j] == -5: qb = j
     if q is None: continue
     for j in xrange(f.Events.nKshort):
         if deltaR(f.Events.Kshort_eta[j], f.Events.Kshort_phi[j],
                   f.Events.GenPart_eta[q], f.Events.GenPart_phi[q]) < 0.5:
-            print "Match q ", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q], f.Events.Kshort_pt[j]
+            if f.Events.Kshort_pt[j] / f.Events.GenPart_eta[q] < 0.2: continue
+            if isS: nSM += 1
+            else: nBM += 1
+#            print "Match q ", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q], f.Events.Kshort_pt[j]
         if deltaR(f.Events.Kshort_eta[j], f.Events.Kshort_phi[j],
                   f.Events.GenPart_eta[qb], f.Events.GenPart_phi[qb]) < 0.5:
-            print "Match qb", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb], f.Events.Kshort_pt[j]
+            if f.Events.Kshort_pt[j] / f.Events.GenPart_eta[qb] < 0.2: continue
+            if isS: nSM += 1
+            else: nBM += 1
+#            print "Match qb", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb], f.Events.Kshort_pt[j]
+
+print "S ", nS, "B ", nB
+print "SM", nSM, "BM", nBM

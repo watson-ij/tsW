@@ -1,3 +1,9 @@
+* Running the CMSSW generation on Batch
+
+The TTbar script used for generation can take an argument for 1 to
+generate sWsW or 0 to generate bWbW. When sending to the batch system,
+change this in the "arguments" line of the tsWbatch.jds file.
+
 * Running CMSSW production
 
 Find workflow numbers

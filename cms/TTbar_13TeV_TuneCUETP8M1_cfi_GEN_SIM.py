@@ -67,6 +67,8 @@ process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
 
+import sys
+
 process.generator = cms.EDFilter("Pythia8GeneratorFilter",
     PythiaParameters = cms.PSet(
         parameterSets = cms.vstring('pythia8CommonSettings', 
@@ -76,8 +78,8 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                 'Top:gg2ttbar = on ', 
                 'Top:qqbar2ttbar = on ', 
                 '6:m0 = 175 ',
-                "StandardModel:Vtb = 0.0",
-                "StandardModel:Vts = 1.0",
+                "StandardModel:Vts = 1.0" if int(sys.argv[2]) == 1 else "StandardModel:Vts = 0.0",
+                "StandardModel:Vtb = 0.0" if int(sys.argv[2]) == 1 else "StandardModel:Vtb = 1.0",
                 "StandardModel:Vtd = 0.0",
                 "24:onMode = 0",
                 "24:onIfAny = 13",
