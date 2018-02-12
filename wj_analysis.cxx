@@ -38,6 +38,8 @@ int main(int argc, char* argv[])
 
   TString cutflow_title = "cutflow" + inf;
   TH1F * cutflow = new TH1F("cutflow", cutflow_title, 7,-1,6); // -1 : all events, 0 : events after lepton selection, 1~ : events after step
+  TH1F * histo_dihadron_S = new TH1F("dihadron_mass_S", "dihadron_mass_S", 300, 0, 3000);
+  TH1F * histo_dihadron_B = new TH1F("dihadron_mass_B", "dihadron_mass_B", 300, 0, 3000);
 
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
@@ -46,7 +48,7 @@ int main(int argc, char* argv[])
     initValues();
 
     recoParticle(cutflow);
-    genParticle();
+    genParticle(histo_dihadron_S, histo_dihadron_B);
 
     /*
     // pion track test
@@ -68,6 +70,8 @@ int main(int argc, char* argv[])
   tfiles->Close();
   outtr->Write();
   cutflow->Write();
+  histo_dihadron_S->Write();
+  histo_dihadron_B->Write();
 
   out->Close();
 
@@ -82,6 +86,8 @@ int main(int argc, char* argv[])
 void initValues(){
     dilepton_mass = -99;
     dilepton_ch = 0; 
+
+    channel = 0;
 
     gen_step0 = false; gen_step1 = false;
 
@@ -162,7 +168,7 @@ void recoParticle(TH1F * cutflow){
 
 }
 
-void genParticle(){
+void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
     std::vector<const GenParticle*> genTops;
     std::vector<const GenParticle*> genJets;
     std::vector<struct Lepton> genLeps;
@@ -181,8 +187,20 @@ void genParticle(){
 
       auto lep_tmp = (const GenParticle*) particles->At(lastBoson->D1);
       auto neu = (const GenParticle*) particles->At(lastBoson->D2);
+
       struct Lepton lep = toLepton(lep_tmp);
       genLeps.push_back(lep);
+
+      if (genLeps.size() == 2){
+        if (abs(genLeps[0].pdgid) == 11 ||abs(genLeps[0].pdgid) == 13 ||abs(genLeps[0].pdgid) == 15){
+          if (abs(genLeps[1].pdgid) == 11 ||abs(genLeps[1].pdgid) == 13 ||abs(genLeps[1].pdgid) == 15){
+            channel = 2;
+          }
+        }
+        else channel = 1;
+      }
+
+
       jet_pid.push_back(jet->PID);
       auto jet_tlv = jet->P4();
       jet_pt.push_back(jet_tlv.Pt());
@@ -228,7 +246,7 @@ void genParticle(){
         int absPid = abs(c.PID);
         if (absPid == 310)  kshortsInjet.push_back(c);
         if (absPid == 3122) lambdasInjet.push_back(c);
-        if (absPid == 2212 || absPid == 311 || absPid == 211)  hadronsInjet.push_back(c);
+        if (absPid == 2212 || absPid == 321 || absPid == 211)  hadronsInjet.push_back(c);
         if (absPid == 11 || absPid == 13)  leptonsInjet.push_back(c);
       }
 
@@ -311,6 +329,9 @@ void genParticle(){
 
             auto diHadron = hadron1+hadron2;
             diHadron_mass.push_back(diHadron.M());
+	    if(abs(jet->PID) == 3) histo_dihadron_S->Fill(diHadron.M()*1000);
+            if(abs(jet->PID) == 5) histo_dihadron_B->Fill(diHadron.M()*1000);
+
             //diHadron_energy.push_back(diHadron.E());
             //diHadron_sameMother.push_back(hadronsInjet[ih1].M1 == hadronsInjet[ih2].M1 );
           }

@@ -12,7 +12,7 @@ TClonesArray *tracks = 0;
 
 //write
 float dilepton_mass;
-int dilepton_ch, step;
+int dilepton_ch, channel;
 
 bool gen_step0, gen_step1;
 
@@ -37,7 +37,7 @@ const GenParticle* getLast(TClonesArray * particles, const GenParticle* p);
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, const GenParticle* p);
 void initValues();
 void recoParticle(TH1F*);
-void genParticle();
+void genParticle(TH1F*, TH1F*);
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck);
 
 void defBranchFucns(TTree* outtr){
@@ -45,7 +45,6 @@ void defBranchFucns(TTree* outtr){
   #define BranchI(name) Branch_(Int_t, name, I)
   #define BranchF(name) Branch_(Float_t, name, F)
   #define BranchO(name) Branch_(Bool_t, name, O)
-
   #define BranchA_(type, name, size, suffix) outtr->Branch(#name, &name, #name"["#size"]/"#suffix);
   #define BranchAI(name, size) BranchA_(Int_t, name, size, I);
   #define BranchAF(name, size) BranchA_(Float_t, name, size, F);
@@ -61,7 +60,7 @@ void defBranchFucns(TTree* outtr){
 
   BranchF(dilepton_mass);
   BranchI(dilepton_ch);
-  BranchI(step);
+  BranchI(channel);
 
   BranchO(gen_step0);
   BranchO(gen_step1);
