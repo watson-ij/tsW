@@ -3,13 +3,13 @@
 date
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_0/src
+cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src
 eval `scramv1 runtime -sh`
 cd -
 
 echo "-- Setup CMS environment"
 
-TDIR=./result/`date +%Y%m%d_%H%M%S`
+TDIR=./result/`date +%Y%m%d_%H%M%S`_`hostname`_tsW
 mkdir -p $TDIR
 cp /cms/scratch/iwatson/tsW/cms/*py $TDIR
 cd $TDIR
