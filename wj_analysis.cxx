@@ -91,13 +91,43 @@ void initValues(){
 
     gen_step0 = false; gen_step1 = false;
 
-    jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
-    jet_pid.clear();
+//    jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
+//    jet_pid.clear();
 
-    kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear();
-    lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear();
-    leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
-    nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
+    memset(jet_pt,0, sizeof(jet_pt));
+    memset(jet_eta,0, sizeof(jet_eta));
+    memset(jet_phi,0, sizeof(jet_phi));
+    memset(jet_energy,0, sizeof(jet_energy));
+    memset(jet_pid,0, sizeof(jet_pid));
+
+    memset(kshortsInjet_pt,-99, sizeof(kshortsInjet_pt));
+    memset(kshortsInjet_eta,-99, sizeof(kshortsInjet_eta));
+    memset(kshortsInjet_phi,-99, sizeof(kshortsInjet_phi));
+    memset(kshortsInjet_energy,-99, sizeof(kshortsInjet_energy));
+    memset(kshortsInjet_R,-99, sizeof(kshortsInjet_R));
+    memset(kshortsInjet_outR,-99, sizeof(kshortsInjet_outR));
+
+    memset(lambdasInjet_pt,-99, sizeof(lambdasInjet_pt));
+    memset(lambdasInjet_eta,-99, sizeof(lambdasInjet_eta));
+    memset(lambdasInjet_phi,-99, sizeof(lambdasInjet_phi));
+    memset(lambdasInjet_energy,-99, sizeof(lambdasInjet_energy));
+    memset(lambdasInjet_R,-99, sizeof(lambdasInjet_R));
+    memset(lambdasInjet_outR,-99, sizeof(lambdasInjet_outR));
+
+    memset(leptonsInjet_pt,-99, sizeof(leptonsInjet_pt));
+    memset(leptonsInjet_eta,-99, sizeof(leptonsInjet_eta));
+    memset(leptonsInjet_phi,-99, sizeof(leptonsInjet_phi));
+    memset(leptonsInjet_energy,-99, sizeof(leptonsInjet_energy));
+    memset(leptonsInjet_R,-99, sizeof(leptonsInjet_R));
+
+    memset(nkshortsInjet,-99, sizeof(nkshortsInjet));
+    memset(nlambdasInjet,-99, sizeof(nlambdasInjet));
+    memset(nleptonsInjet,-99, sizeof(nleptonsInjet));
+
+//    kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear();
+//    lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear();
+//    leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
+//    nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
 
     jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
 }
@@ -173,6 +203,9 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
     std::vector<const GenParticle*> genJets;
     std::vector<struct Lepton> genLeps;
     std::vector<std::vector<float> > jet_diHadron_mass;
+
+    int numbering = 0;
+
     for (unsigned i = 0; i < particles->GetEntries(); ++ i){
       auto p = (const GenParticle*) particles->At(i);
       if (p->Status > 30) continue;
@@ -201,12 +234,17 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
       }
 
 
-      jet_pid.push_back(jet->PID);
+      jet_pid[numbering] = jet->PID;
+      //jet_pid.push_back(jet->PID);
       auto jet_tlv = jet->P4();
-      jet_pt.push_back(jet_tlv.Pt());
-      jet_eta.push_back(jet_tlv.Eta());
-      jet_phi.push_back(jet_tlv.Phi());
-      jet_energy.push_back(jet_tlv.E());
+      //jet_pt.push_back(jet_tlv.Pt());
+      //jet_eta.push_back(jet_tlv.Eta());
+      //jet_phi.push_back(jet_tlv.Phi());
+      //jet_energy.push_back(jet_tlv.E());
+      jet_pt[numbering] = jet_tlv.Pt();
+      jet_eta[numbering] = jet_tlv.Eta();
+      jet_phi[numbering] = jet_tlv.Phi();
+      jet_energy[numbering] = jet_tlv.E();
 
       // collect jet constitues
       std::vector<GenParticle> jetConstitues;
@@ -251,70 +289,123 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
       }
 
       // save highest pT Ks only
-      nkshortsInjet.push_back(kshortsInjet.size());
+//      nkshortsInjet.push_back(kshortsInjet.size());
+      nkshortsInjet[numbering] = kshortsInjet.size();
       if (kshortsInjet.size() >0){
         sort(kshortsInjet.begin(), kshortsInjet.end(), [](GenParticle a, GenParticle b){return a.PT > b.PT;});
+/*
         kshortsInjet_pt.push_back(kshortsInjet[0].PT);
         kshortsInjet_eta.push_back(kshortsInjet[0].Eta);
         kshortsInjet_phi.push_back(kshortsInjet[0].Phi);
         kshortsInjet_energy.push_back(kshortsInjet[0].E);
+*/
+	kshortsInjet_pt[numbering] = kshortsInjet[0].PT;
+        kshortsInjet_eta[numbering] = kshortsInjet[0].Eta;
+        kshortsInjet_phi[numbering] = kshortsInjet[0].Phi;
+        kshortsInjet_energy[numbering] = kshortsInjet[0].E;
         auto R = sqrt(pow(kshortsInjet[0].X,2)+pow(kshortsInjet[0].Y,2)+pow(kshortsInjet[0].Z,2));
-        kshortsInjet_R.push_back(R);
+        kshortsInjet_R[numbering] = R;
+//        kshortsInjet_R.push_back(R);
 
         auto kshortDau = (const GenParticle*) particles->At(kshortsInjet[0].D1);
         auto outR = sqrt(pow(kshortDau->X,2)+pow(kshortDau->Y,2)+pow(kshortDau->Z,2));
-        kshortsInjet_outR.push_back(outR);
+	kshortsInjet_outR[numbering] = outR;
+//        kshortsInjet_outR.push_back(outR);
       }
       else {
+/*
         kshortsInjet_pt.push_back(-99);
         kshortsInjet_eta.push_back(-99);
         kshortsInjet_phi.push_back(-99);
         kshortsInjet_energy.push_back(-99);
         kshortsInjet_R.push_back(-99);
         kshortsInjet_outR.push_back(-99);
+*/
+        kshortsInjet_pt[numbering] = -99;
+        kshortsInjet_eta[numbering] = -99;
+        kshortsInjet_phi[numbering] = -99;
+        kshortsInjet_energy[numbering] = -99;
+        kshortsInjet_R[numbering] = -99;
+        kshortsInjet_outR[numbering] = -99;
+
       }
 
       // save highest pT lambda only
-      nlambdasInjet.push_back(lambdasInjet.size());
+//      nlambdasInjet.push_back(lambdasInjet.size());
+      nlambdasInjet[numbering] = lambdasInjet.size();
       if (lambdasInjet.size() >0){
         sort(lambdasInjet.begin(), lambdasInjet.end(), [](GenParticle a, GenParticle b){return a.PT > b.PT;});
+/*
         lambdasInjet_pt.push_back(lambdasInjet[0].PT);
         lambdasInjet_eta.push_back(lambdasInjet[0].Eta);
         lambdasInjet_phi.push_back(lambdasInjet[0].Phi);
         lambdasInjet_energy.push_back(lambdasInjet[0].E);
+*/
+        lambdasInjet_pt[numbering] = lambdasInjet[0].PT;
+        lambdasInjet_eta[numbering] = lambdasInjet[0].Eta;
+        lambdasInjet_phi[numbering] = lambdasInjet[0].Phi;
+        lambdasInjet_energy[numbering] = lambdasInjet[0].E;
+
         auto R = sqrt(pow(lambdasInjet[0].X,2)+pow(lambdasInjet[0].Y,2)+pow(lambdasInjet[0].Z,2));
-        lambdasInjet_R.push_back(R);
+	lambdasInjet_R[numbering] = R;
+//        lambdasInjet_R.push_back(R);
 
         auto lambdaDau = (const GenParticle*) particles->At(lambdasInjet[0].D1);
         auto outR = sqrt(pow(lambdaDau->X,2)+pow(lambdaDau->Y,2)+pow(lambdaDau->Z,2));
-        lambdasInjet_outR.push_back(outR);
+	lambdasInjet_outR[numbering] = outR;
+//        lambdasInjet_outR.push_back(outR);
       }
       else {
+/*
         lambdasInjet_pt.push_back(-99);
         lambdasInjet_eta.push_back(-99);
         lambdasInjet_phi.push_back(-99);
         lambdasInjet_energy.push_back(-99);
         lambdasInjet_R.push_back(-99);
         lambdasInjet_outR.push_back(-99);
+*/
+        lambdasInjet_pt[numbering] = -99;
+        lambdasInjet_eta[numbering] = -99;
+        lambdasInjet_phi[numbering] = -99;
+        lambdasInjet_energy[numbering] = -99;
+        lambdasInjet_R[numbering] = -99;
+        lambdasInjet_outR[numbering] = -99;
+
       }
 
       // save highest pT lepton only
-      nleptonsInjet.push_back(leptonsInjet.size());
+//      nleptonsInjet.push_back(leptonsInjet.size());
+      nleptonsInjet[numbering] = leptonsInjet.size();
       if (leptonsInjet.size() >0){
         sort(leptonsInjet.begin(), leptonsInjet.end(), [](GenParticle a, GenParticle b){return a.PT > b.PT;});
+/*
         leptonsInjet_pt.push_back(leptonsInjet[0].PT);
         leptonsInjet_eta.push_back(leptonsInjet[0].Eta);
         leptonsInjet_phi.push_back(leptonsInjet[0].Phi);
         leptonsInjet_energy.push_back(leptonsInjet[0].E);
+*/
+        leptonsInjet_pt[numbering] = leptonsInjet[0].PT;
+        leptonsInjet_eta[numbering] = leptonsInjet[0].Eta;
+        leptonsInjet_phi[numbering] = leptonsInjet[0].Phi;
+        leptonsInjet_energy[numbering] = leptonsInjet[0].E;
         auto R = sqrt(pow(leptonsInjet[0].X,2)+pow(leptonsInjet[0].Y,2)+pow(leptonsInjet[0].Z,2));
-        leptonsInjet_R.push_back(R);
+	leptonsInjet_R[numbering] = R;
+//        leptonsInjet_R.push_back(R);
       }
       else {
+/*
         leptonsInjet_pt.push_back(-99);
         leptonsInjet_eta.push_back(-99);
         leptonsInjet_phi.push_back(-99);
         leptonsInjet_energy.push_back(-99);
         leptonsInjet_R.push_back(-99);
+*/
+        leptonsInjet_pt[numbering] = -99;
+        leptonsInjet_eta[numbering] = -99;
+        leptonsInjet_phi[numbering] = -99;
+        leptonsInjet_energy[numbering] = -99;
+        leptonsInjet_R[numbering] = -99;
+
       }
 
       std::vector<float> diHadron_mass;
@@ -339,6 +430,8 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
       }
       jet_diHadron_mass.push_back(diHadron_mass);
 
+      numbering = numbering + 1;
+
     }
 
     jet1_diHadron_mass = jet_diHadron_mass[0];
@@ -354,6 +447,7 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
       auto genDilep = genLeps[0].tlv+genLeps[1].tlv;
       if (genDilep.M() > 20. && genLeps[0].charge * genLeps[1].charge < 0 ) gen_step1 = true;
     }
+
 }
 
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck){
