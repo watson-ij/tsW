@@ -15,7 +15,6 @@ float dilepton_mass;
 int dilepton_ch, channel;
 
 bool gen_step0, gen_step1;
-/*
 std::vector<float> jet_pt, jet_eta, jet_phi, jet_energy;
 std::vector<int> jet_pid;
 
@@ -24,17 +23,6 @@ std::vector<float> lambdasInjet_pt, lambdasInjet_eta, lambdasInjet_phi, lambdasI
 std::vector<float> leptonsInjet_pt, leptonsInjet_eta, leptonsInjet_phi, leptonsInjet_energy, leptonsInjet_R, leptonsInjet_outR;
 
 std::vector<int> nkshortsInjet, nlambdasInjet, nleptonsInjet;
-*/
-
-float jet_pt[2] = {-99.}; float jet_eta[2] = {-99.};float jet_phi[2] = {-99.};float jet_energy[2] = {-99.};
-int jet_pid[2] = {-99};
-
-float kshortsInjet_pt[2] = {-99.};float kshortsInjet_eta[2] = {-99.};float kshortsInjet_phi[2] = {-99.};float kshortsInjet_energy[2] = {-99.};float kshortsInjet_R[2] = {-99.};float kshortsInjet_outR[2] = {-99.};
-float lambdasInjet_pt[2] = {-99.};float lambdasInjet_eta[2] = {-99.};float lambdasInjet_phi[2] = {-99.};float lambdasInjet_energy[2] = {-99.};float lambdasInjet_R[2] = {-99.};float lambdasInjet_outR[2] = {-99.};
-float leptonsInjet_pt[2] = {-99.};float leptonsInjet_eta[2] = {-99.};float leptonsInjet_phi[2] = {-99.};float leptonsInjet_energy[2] = {-99.};float leptonsInjet_R[2] = {-99.};float leptonsInjet_outR[2] = {-99.};
-
-int nkshortsInjet[2] = {-99};int nlambdasInjet[2] = {-99};int nleptonsInjet[2] = {-99};
-
 
 std::vector<float> jet1_diHadron_mass, jet2_diHadron_mass;
 
@@ -75,18 +63,12 @@ void defBranchFucns(TTree* outtr){
 
   BranchO(gen_step0);
   BranchO(gen_step1);
-/*
+
   BranchVF(jet_pt); BranchVF(jet_eta); BranchVF(jet_phi); BranchVF(jet_energy); BranchVI(jet_pid);
   BranchVF(kshortsInjet_pt); BranchVF(kshortsInjet_eta); BranchVF(kshortsInjet_phi); BranchVF(kshortsInjet_energy); BranchVF(kshortsInjet_R); BranchVF(kshortsInjet_outR);
   BranchVF(lambdasInjet_pt); BranchVF(lambdasInjet_eta); BranchVF(lambdasInjet_phi); BranchVF(lambdasInjet_energy); BranchVF(lambdasInjet_R); BranchVF(lambdasInjet_outR);
   BranchVF(leptonsInjet_pt); BranchVF(leptonsInjet_eta); BranchVF(leptonsInjet_phi); BranchVF(leptonsInjet_energy); BranchVF(leptonsInjet_R); BranchVF(leptonsInjet_outR);
   BranchVI(nkshortsInjet); BranchVI(nlambdasInjet); BranchVI(nleptonsInjet);
-*/
-  BranchAF(jet_pt, 2); BranchAF(jet_eta, 2); BranchAF(jet_phi, 2); BranchAF(jet_energy, 2); BranchAI(jet_pid, 2);
-  BranchAF(kshortsInjet_pt, 2); BranchAF(kshortsInjet_eta, 2); BranchAF(kshortsInjet_phi, 2); BranchAF(kshortsInjet_energy, 2); BranchAF(kshortsInjet_R, 2); BranchAF(kshortsInjet_outR, 2);
-  BranchAF(lambdasInjet_pt, 2); BranchAF(lambdasInjet_eta, 2); BranchAF(lambdasInjet_phi, 2); BranchAF(lambdasInjet_energy, 2); BranchAF(lambdasInjet_R, 2); BranchAF(lambdasInjet_outR, 2);
-  BranchAF(leptonsInjet_pt, 2); BranchAF(leptonsInjet_eta, 2); BranchAF(leptonsInjet_phi, 2); BranchAF(leptonsInjet_energy, 2); BranchAF(leptonsInjet_R, 2); BranchAF(leptonsInjet_outR, 2);
-  BranchAI(nkshortsInjet, 2); BranchAI(nlambdasInjet, 2); BranchAI(nleptonsInjet, 2);
 
   BranchVF(jet1_diHadron_mass);
   BranchVF(jet2_diHadron_mass);
