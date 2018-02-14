@@ -1,6 +1,7 @@
 #!/bin/bash
 
 date
+hostname
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src
@@ -9,6 +10,9 @@ cd -
 
 echo "-- Setup CMS environment"
 
+if [[ $1 == "2" ]]; then
+    TDIR=./result/`date +%Y%m%d_%H%M%S`_`hostname`_ttsWbW
+fi
 if [[ $1 == "1" ]]; then
     TDIR=./result/`date +%Y%m%d_%H%M%S`_`hostname`_tsW
 fi
@@ -32,5 +36,9 @@ echo "-- Running Step 3"
 cmsRun ./step3_RAW2DIGI_L1Reco_RECO_RECOSIM_EI_PAT_VALIDATION_DQM.py > step3.log 2>&1
 echo "-- Running NanoAOD"
 cmsRun nanoAOD_NANO.py
+rm step1.root
+rm step2.root
+rm step3.root
+rm step3_inDQM.root
 echo "-- Done."
 date
