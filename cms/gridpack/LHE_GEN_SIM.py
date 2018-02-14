@@ -2,9 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: TTbar_13TeV_TuneCUETP8M1_cfi --conditions auto:phase1_2017_realistic -n 100 --era Run2_2017 --eventcontent FEVTDEBUG --relval 9000,50 -s GEN,SIM --datatier GEN-SIM --beamspot Realistic25ns13TeVEarly2017Collision --geometry DB:Extended --fileout file:step1.root
-
+# with command line options: Configuration/Generator/python/Hadronizer_TuneCUETP8M1_13TeV_MLM_5f_max4j_LHE_pythia8_cff.py -s GEN --conditions auto:mc --filein /store/lhe/12821/ascii_dump.lhe --datatier GEN-SIM-RAW --eventcontent RAWSIM -n 1000 --no_exec
 import FWCore.ParameterSet.Config as cms
+
+from Configuration.Generator.Pythia8CommonSettings_cfi import *
+from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
+from Configuration.Generator.Pythia8aMCatNLOSettings_cfi import *
 
 from Configuration.StandardSequences.Eras import eras
 
@@ -31,7 +34,12 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 # Input source
-process.source = cms.Source("EmptySource")
+process.source = cms.Source("LHESource",
+    dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
+    fileNames = cms.untracked.vstring('file:cmsgrid_final.lhe'),
+    inputCommands = cms.untracked.vstring('keep *', 
+        'drop LHEXMLStringProduct_*_*_*')
+)
 
 process.options = cms.untracked.PSet(
 
@@ -39,7 +47,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('TTbar_13TeV_TuneCUETP8M1_cfi nevts:100'),
+    annotation = cms.untracked.string('Configuration/Generator/python/Hadronizer_TuneCUETP8M1_13TeV_MLM_5f_max4j_LHE_pythia8_cff.py nevts:1000'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
@@ -67,49 +75,38 @@ process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
 
-import sys
-option = int(sys.argv[2])
-
-process.generator = cms.EDFilter("Pythia8GeneratorFilter",
-    PythiaParameters = cms.PSet(
-        parameterSets = cms.vstring('pythia8CommonSettings', 
-            'pythia8CUEP8M1Settings', 
-            'processParameters'),
-        processParameters = cms.vstring(
-                'Top:gg2ttbar = on ', 
-                'Top:qqbar2ttbar = on ', 
-                '6:m0 = 175 ',
-                "StandardModel:Vts = 1.0" if option == 1 else (
-                        "StandardModel:Vts = 0.707" if option == 2 else "StandardModel:Vts = 0.0"),
-                "StandardModel:Vtb = 0.0" if option == 1 else (
-                        "StandardModel:Vtb = 0.707" if option == 2 else "StandardModel:Vtb = 1.0"),
-                "StandardModel:Vtd = 0.0",
-                "24:onMode = 0",
-                "24:onIfAny = 13",
-                "24:onIfAny = 11",
-        ),
-        pythia8CUEP8M1Settings = cms.vstring('Tune:pp 14', 
-            'Tune:ee 7', 
-            'MultipartonInteractions:pT0Ref=2.4024', 
-            'MultipartonInteractions:ecmPow=0.25208', 
-            'MultipartonInteractions:expPow=1.6'),
-        pythia8CommonSettings = cms.vstring('Tune:preferLHAPDF = 2', 
-            'Main:timesAllowErrors = 10000', 
-            'Check:epTolErr = 0.01', 
-            'Beams:setProductionScalesFromLHEF = off', 
-            'SLHA:keepSM = on', 
-            'SLHA:minMassSM = 1000.', 
-            'ParticleDecays:limitTau0 = on', 
-            'ParticleDecays:tau0Max = 10', 
-            'ParticleDecays:allowPhotonRadiation = on')
-    ),
-    comEnergy = cms.double(13000.0),
+process.generator = cms.EDFilter("Pythia8HadronizerFilter",
+    maxEventsToPrint = cms.untracked.int32(1),
+    pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
-    maxEventsToPrint = cms.untracked.int32(0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    pythiaPylistVerbosity = cms.untracked.int32(0)
+    comEnergy = cms.double(13000.),
+    PythiaParameters = cms.PSet(
+        pythia8CommonSettingsBlock,
+        pythia8CUEP8M1SettingsBlock,
+        pythia8aMCatNLOSettingsBlock,
+        processParameters = cms.vstring(
+            'JetMatching:setMad = off',
+            'JetMatching:scheme = 1',
+            'JetMatching:merge = on',
+            'JetMatching:jetAlgorithm = 2',
+            'JetMatching:etaJetMax = 999.',
+            'JetMatching:coneRadius = 1.',
+            'JetMatching:slowJetPower = 1',
+            'JetMatching:qCut = 30.', #this is the actual merging scale
+            'JetMatching:doFxFx = on',
+            'JetMatching:qCutME = 20.',#this must match the ptj cut in the lhe generation step
+            'JetMatching:nQmatch = 5', #4 corresponds to 4-flavour scheme (no matching of b-quarks), 5 for 5-flavour scheme
+            'JetMatching:nJetMax = 2', #number of partons in born matrix element for highest multiplicity
+            'TimeShower:mMaxGamma = 4.0',
+        ),
+        parameterSets = cms.vstring('pythia8CommonSettings',
+                                    'pythia8CUEP8M1Settings',
+                                    'pythia8aMCatNLOSettings',
+                                    'processParameters',
+                                    )
+    )
 )
-
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
 

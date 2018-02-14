@@ -2,3 +2,4 @@
 *.root
 *.pyc
 /py.py
+/cms/result
