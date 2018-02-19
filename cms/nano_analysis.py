@@ -5,8 +5,8 @@ from ROOT import TFile, TCanvas, TTree, TH1F
 from math import hypot, pi
 
 f = TFile("result/20180212_135259_wn4045.sdfarm.kr_tbW/nanoAOD.root")
-f = TFile("result/20180212_135216_wn4045.sdfarm.kr_tsW/nanoAOD.root")
-f = TFile("result/20180214_132212_cms-t3-wn3022.sdfarm.kr_ttsWbW/nanoAOD.root")
+#f = TFile("result/20180212_135216_wn4045.sdfarm.kr_tsW/nanoAOD.root")
+#f = TFile("result/20180214_132212_cms-t3-wn3022.sdfarm.kr_ttsWbW/nanoAOD.root")
 # # f.Events.Print()
 
 def deltaPhi(phi1,phi2):
@@ -46,16 +46,16 @@ for e in f.Events:
     for j in xrange(f.Events.nKshort):
         if deltaR(f.Events.Kshort_eta[j], f.Events.Kshort_phi[j],
                   f.Events.GenPart_eta[q], f.Events.GenPart_phi[q]) < 0.5:
-            if f.Events.Kshort_pt[j] / f.Events.GenPart_eta[q] < 0.2: continue
+            if f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q] < 0.2: continue
             if isS: nSM += 1
             else: nBM += 1
-#            print "Match q ", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q], f.Events.Kshort_pt[j]
+            print "Match q ", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q], f.Events.Kshort_pt[j]
         if deltaR(f.Events.Kshort_eta[j], f.Events.Kshort_phi[j],
                   f.Events.GenPart_eta[qb], f.Events.GenPart_phi[qb]) < 0.5:
-            if f.Events.Kshort_pt[j] / f.Events.GenPart_eta[qb] < 0.2: continue
+            if f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb] < 0.2: continue
             if isS: nSM += 1
             else: nBM += 1
-#            print "Match qb", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb], f.Events.Kshort_pt[j]
+            print "Match qb", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb], f.Events.Kshort_pt[j]
 
 #print "S ", nS, "B ", nB
 #print "SM", nSM, "BM", nBM
