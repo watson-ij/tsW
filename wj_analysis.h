@@ -55,8 +55,10 @@ std::vector<float> jet1_diHadron_mass, jet2_diHadron_mass;
 //  Finder()
 bool matched;
 
+float dr, dr_true;
+
 std::vector<float> mass_track_pair;
-std::vector<float> mass_pion;
+std::vector<float> mass_pion_1, mass_pion_true_1, mass_pion_2, mass_pion_true_2;
 
 //  global
 bool jetFinder = false;
@@ -79,7 +81,7 @@ Double_t DeltaR(Double_t deta, Double_t dphi);
 void initValues();
 void recoParticle(TH1F*);
 void genParticle(TH1F*, TH1F*);
-void Finder(TTree*);
+void Finder(TTree*,TH2F*);
 
 //define functions
 void defBranchGen(TTree* outtr){
@@ -112,8 +114,10 @@ void defBranchGen(TTree* outtr){
 void defBranchFinder(TTree* outtr){
   BranchO(matched);
 
+  BranchF(dr); BranchF(dr_true);
+
   BranchVF(mass_track_pair);
-  BranchVF(mass_pion);
+  BranchVF(mass_pion_1); BranchVF(mass_pion_true_1); BranchVF(mass_pion_2); BranchVF(mass_pion_true_2);
 }
 
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p){
