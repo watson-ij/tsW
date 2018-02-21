@@ -1,16 +1,37 @@
-// struct for selected leptons
+//define
+#define Branch_(type, name, suffix) outtr->Branch(#name, &name, #name "/" #suffix);
+#define BranchI(name) Branch_(Int_t, name, I)
+#define BranchF(name) Branch_(Float_t, name, F)
+#define BranchO(name) Branch_(Bool_t, name, O)
+#define BranchA_(type, name, size, suffix) outtr->Branch(#name, &name, #name"["#size"]/"#suffix);
+#define BranchAI(name, size) BranchA_(Int_t, name, size, I);
+#define BranchAF(name, size) BranchA_(Float_t, name, size, F);
+#define BranchAO(name, size) BranchA_(Bool_t, name, size, O);
+#define BranchVF(name) outtr->Branch(#name, "vector<float>", &name);
+#define BranchVI(name) outtr->Branch(#name, "vector<int>", &name);
+#define BranchVO(name) outtr->Branch(#name, "vector<bool>", &name);
+
+#define BranchP_(type, br, name, suffix) TBranch *br =  outtr->Branch(#name, &name, #name "/" #suffix);
+#define BranchPI(br,name) BranchP_(Int_t, br,name, I);
+#define BranchPF(br,name) BranchP_(Float_t,br, name, F);
+#define BranchPO(br,name) BranchP_(Bool_t,br, name, O);
+
+//struct for selected leptons
 struct Lepton {
-   TLorentzVector tlv;
-   int charge;
-   int pdgid;
+  TLorentzVector tlv;
+  int charge;
+  int pdgid;
 };
 
-//read
+//read data
 TClonesArray *gen_jets = 0, *particles = 0;
 TClonesArray *electrons = 0, *muons = 0, *jets = 0, *missingET = 0;
 TClonesArray *tracks = 0;
 
-//write
+//declare variable for branch
+//  recoParticle()
+
+//  genParticle()
 float dilepton_mass;
 
 float x_KS, x_KS_S, x_KS_B, rho_KS, rho_KS_S,rho_KS_B, d_KS, d_KS_S, d_KS_B;
@@ -31,15 +52,23 @@ std::vector<int> nkshortsInjet, nlambdasInjet, nleptonsInjet;
 
 std::vector<float> jet1_diHadron_mass, jet2_diHadron_mass;
 
-// global
+//  Finder()
+bool matched;
+
+std::vector<float> mass_track_pair;
+std::vector<float> mass_pion;
+
+//  global
 bool jetFinder = false;
 
-// define functions
+//declare functions
 struct Lepton toLepton(Muon* p){ struct Lepton l; l.tlv = p->P4(); l.charge = p->Charge; l.pdgid=11*(p->Charge); return l;}
 struct Lepton toLepton(Electron* p){ struct Lepton l; l.tlv = p->P4(); l.charge = p->Charge; l.pdgid=13*(p->Charge); return l;}
 struct Lepton toLepton(const GenParticle* p){ struct Lepton l; l.tlv = p->P4(); l.charge = p->Charge; l.pdgid=p->PID; return l;}
 
-void defBrancheFucns(TTree* outtr);
+void defBranchGen(TTree* outtr);
+void defBranchFinder(TTree* outtr);
+
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p);
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, const GenParticle* p);
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck);
@@ -52,23 +81,8 @@ void recoParticle(TH1F*);
 void genParticle(TH1F*, TH1F*);
 void Finder(TTree*);
 
-void defBranchFucns(TTree* outtr){
-  #define Branch_(type, name, suffix) outtr->Branch(#name, &name, #name "/" #suffix);
-  #define BranchI(name) Branch_(Int_t, name, I)
-  #define BranchF(name) Branch_(Float_t, name, F)
-  #define BranchO(name) Branch_(Bool_t, name, O)
-  #define BranchA_(type, name, size, suffix) outtr->Branch(#name, &name, #name"["#size"]/"#suffix);
-  #define BranchAI(name, size) BranchA_(Int_t, name, size, I);
-  #define BranchAF(name, size) BranchA_(Float_t, name, size, F);
-  #define BranchAO(name, size) BranchA_(Bool_t, name, size, O);
-  #define BranchVF(name) outtr->Branch(#name, "vector<float>", &name);
-  #define BranchVI(name) outtr->Branch(#name, "vector<int>", &name);
-  #define BranchVO(name) outtr->Branch(#name, "vector<bool>", &name);
- 
-  #define BranchP_(type, br, name, suffix) TBranch *br =  outtr->Branch(#name, &name, #name "/" #suffix);
-  #define BranchPI(br,name) BranchP_(Int_t, br,name, I);
-  #define BranchPF(br,name) BranchP_(Float_t,br, name, F);
-  #define BranchPO(br,name) BranchP_(Bool_t,br, name, O);
+//define functions
+void defBranchGen(TTree* outtr){
 
   BranchF(dilepton_mass);
 
@@ -93,6 +107,13 @@ void defBranchFucns(TTree* outtr){
   BranchVF(jet2_diHadron_mass);
 
   return;
+}
+
+void defBranchFinder(TTree* outtr){
+  BranchO(matched);
+
+  BranchVF(mass_track_pair);
+  BranchVF(mass_pion);
 }
 
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p){

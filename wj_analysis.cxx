@@ -36,22 +36,20 @@ int main(int argc, char* argv[])
 
   //make out file
   auto out = TFile::Open(outf.c_str(), "RECREATE");
-  auto outtr = new TTree("tsW", "tsW");
+  auto outtr = new TTree("tsw", "tsw");
 
-  defBranchFucns(outtr);
+  //defBranchGen(outtr);
+  defBranchFinder(outtr);
 
   TString cutflow_title = "cutflow" + inf;
   TH1F * cutflow = new TH1F("cutflow", cutflow_title, 7,-1,6); // -1 : all events, 0 : events after lepton selection, 1~ : events after step
   TH1F * histo_dihadron_S = new TH1F("dihadron_mass_S", "dihadron_mass_S", 300, 0, 3000);
   TH1F * histo_dihadron_B = new TH1F("dihadron_mass_B", "dihadron_mass_B", 300, 0, 3000);
-
   TH1F * histo_x_KS = new TH1F("hist_x_KS", "hist_x_KS", 100, 0, 1);
-  TH1F * histo_x_lamb = new TH1F("hist_x_lamb", "hist_x_lamb", 100, 0, 1);
-
   TH1F * histo_rho_KS = new TH1F("hist_rho_KS", "hist_rho_KS", 1000, 0, 300);
-  TH1F * histo_rho_lamb = new TH1F("hist_rho_lamb", "hist_rho_lamb", 1800, 0, 18000);
-
   TH1F * histo_d_KS = new TH1F("hist_d_KS", "hist_d_KS", 1000, 0, 20);
+  TH1F * histo_x_lamb = new TH1F("hist_x_lamb", "hist_x_lamb", 100, 0, 1);
+  TH1F * histo_rho_lamb = new TH1F("hist_rho_lamb", "hist_rho_lamb", 1800, 0, 18000);
   TH1F * histo_d_lamb = new TH1F("hist_d_lamb", "hist_d_lamb", 1000, 0, 100);
 
   //Event Loop Start!
@@ -81,8 +79,6 @@ int main(int argc, char* argv[])
     if(!jetFinder)outtr->Fill();
   }
 
-  std::cout << count << std::endl;
-
   tfiles->Close();
 
   outtr->Write();
@@ -93,23 +89,18 @@ int main(int argc, char* argv[])
   outtr->SetBranchAddress("rho_lamb", &rho_lamb);
   outtr->SetBranchAddress("d_KS", &d_KS);
   outtr->SetBranchAddress("d_lamb", &d_lamb);
-
   for (size_t ent = 0; ent < outtr->GetEntries(); ++ent){
     outtr->GetEntry(ent);
-
     histo_x_KS->Fill(x_KS);
     histo_rho_KS->Fill(rho_KS);
     histo_d_KS->Fill(d_KS);
-
     histo_x_lamb->Fill(x_lamb);
     histo_rho_lamb->Fill(rho_lamb);
     histo_d_lamb->Fill(d_lamb);
   }
-
   histo_x_KS->Write();
   histo_rho_KS->Write();
   histo_d_KS->Write();
-
   histo_x_lamb->Write();
   histo_rho_lamb->Write();
   histo_d_lamb->Write();
@@ -130,26 +121,35 @@ int main(int argc, char* argv[])
 }
 
 void initValues(){
-    dilepton_mass = -99; dilepton_ch = 0; 
+    // genParticle()
+    if (!jetFinder){
+      dilepton_mass = -99; dilepton_ch = 0; 
 
-    x_KS = -1; x_KS_S = -1; x_KS_B = -1; rho_KS = -99; rho_KS_S = -99; rho_KS_B = -99; d_KS = -99; d_KS_S = -99; d_KS_B = -99;
-    x_lamb = -1; x_lamb_S = -1; x_lamb_B = -1; rho_lamb = -999; rho_lamb_S = -999; rho_lamb_B = -999; d_lamb = -99; d_lamb_S = -99; d_lamb_B = -99;
+      x_KS = -1; x_KS_S = -1; x_KS_B = -1; rho_KS = -99; rho_KS_S = -99; rho_KS_B = -99; d_KS = -99; d_KS_S = -99; d_KS_B = -99;
+      x_lamb = -1; x_lamb_S = -1; x_lamb_B = -1; rho_lamb = -999; rho_lamb_S = -999; rho_lamb_B = -999; d_lamb = -99; d_lamb_S = -99; d_lamb_B = -99;
 
-    significance_S = -99; significance_B = -99;
+      significance_S = -99; significance_B = -99;
 
-    channel = 0;
+      channel = 0;
 
-    gen_step0 = false; gen_step1 = false;
+      gen_step0 = false; gen_step1 = false;
 
-    jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
-    jet_pid.clear();
+      jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
+      jet_pid.clear();
 
-    kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear(); kshortsInjet_rho.clear(); kshortsInjet_d.clear();
-    lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear(); lambdasInjet_rho.clear(); lambdasInjet_d.clear();
-    leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
-    nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
+      kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear(); kshortsInjet_rho.clear(); kshortsInjet_d.clear();
+      lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear(); lambdasInjet_rho.clear(); lambdasInjet_d.clear();
+      leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
+      nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
 
-    jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
+      jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
+    }
+    // Finder()
+    else {
+      matched = false;
+      mass_track_pair.clear();
+      mass_pion.clear();
+    }
 }
 
 void recoParticle(TH1F * cutflow){
@@ -295,30 +295,8 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
       std::vector<GenParticle> leptonsInjet;
       for (auto c : jetConstitues){
         int absPid = abs(c.PID);
-        if (absPid == 310)  {
-/*
-          auto dau1 = (GenParticle*) particles->At(c.D1);
-          auto dau2 = (GenParticle*) particles->At(c.D2);
-
-          std::cout << "[1] D1 check      : " << dau1->PID << " , ( " << dau1->Px << " , " << dau1->Py << " , " << dau1->Pz << " ) " << " , P : " << sqrt(dau1->Px*dau1->Px + dau1->Py*dau1->Py + dau1->Pz*dau1->Pz ) << " , " << dau1->P << " poistion : ( " << dau1->X << " , " << dau1->Y << " , " << dau1->Z << " ) " << std::endl;
-          std::cout << "[2] D2 check      : " << dau2->PID << " , ( " << dau2->Px << " , " << dau2->Py << " , " << dau2->Pz << " ) " << " , P : " << sqrt(dau2->Px*dau2->Px + dau2->Py*dau2->Py + dau2->Pz*dau2->Pz ) << " , " << dau2->P << " poistion : ( " << dau2->X << " , " << dau2->Y << " , " << dau2->Z << " ) "  << std::endl;
-
-	  std::cout << "[3] KS check      : " << c.PID << " , ( " << c.Px << " , " << c.Py << " , " << c.Pz << " ) " << " , P : " << sqrt(c.Px*c.Px + c.Py*c.Py + c.Pz*c.Pz ) << " , " << c.P << " poistion : ( " << c.X << " , " << c.Y << " , " << c.Z << " ) "  << std::endl;
-*/
-	  kshortsInjet.push_back(c);
-	}
-        if (absPid == 3122) {
-/*
-          auto dau1 = (GenParticle*) particles->At(c.D1);
-          auto dau2 = (GenParticle*) particles->At(c.D2);
-
-          std::cout << "[1] D1 check      : " << dau1->PID << " , ( " << dau1->Px << " , " << dau1->Py << " , " << dau1->Pz << " ) " << " , P : " << sqrt(dau1->Px*dau1->Px + dau1->Py*dau1->Py + dau1->Pz*dau1->Pz ) << " , " << dau1->P << " poistion : ( " << dau1->X << " , " << dau1->Y << " , " << dau1->Z << " ) " << std::endl;
-          std::cout << "[2] D2 check      : " << dau2->PID << " , ( " << dau2->Px << " , " << dau2->Py << " , " << dau2->Pz << " ) " << " , P : " << sqrt(dau2->Px*dau2->Px + dau2->Py*dau2->Py + dau2->Pz*dau2->Pz ) << " , " << dau2->P << " poistion : ( " << dau2->X << " , " << dau2->Y << " , " << dau2->Z << " ) "  << std::endl;
-
-          std::cout << "[3] lambda check      : " << c.PID << " , ( " << c.Px << " , " << c.Py << " , " << c.Pz << " ) " << " , P : " << sqrt(c.Px*c.Px + c.Py*c.Py + c.Pz*c.Pz ) << " , " << c.P << " poistion : ( " << c.X << " , " << c.Y << " , " << c.Z << " ) "  << std::endl;
-*/
-	  lambdasInjet.push_back(c);
-	}
+        if (absPid == 310) kshortsInjet.push_back(c);
+        if (absPid == 3122) lambdasInjet.push_back(c);
         if (absPid == 2212 || absPid == 321 || absPid == 211)  hadronsInjet.push_back(c);
         if (absPid == 11 || absPid == 13)  leptonsInjet.push_back(c);
       }
@@ -407,8 +385,6 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
 
       // save highest pT lambda only
       nlambdasInjet.push_back(lambdasInjet.size());
-      //std::cout << "size check : " << nlambdasInjet.size() << " , jetpid : " << jet->PID << std::endl;
-      //if(nlambdasInjet.size() == 2) std::cout << "nlambdas[0] : " << nlambdasInjet[0] << " , nlambdas[1] : " << nlambdasInjet[1] << std::endl;
       if (lambdasInjet.size() >0){
         sort(lambdasInjet.begin(), lambdasInjet.end(), [](GenParticle a, GenParticle b){return a.PT > b.PT;});
 
@@ -489,14 +465,6 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
         else rho_lamb = rho_lamb_B;
 	if(d_lamb_S > d_lamb_B) d_lamb = d_lamb_S;
 	else d_lamb = d_lamb_B;
-/*
-        if(abs(jet->PID) == 3) std::cout << "pt_lamb_S check : " << lambdasInjet_pt[1] << " , " << jet_pt[1] << " , ratio : " << (lambdasInjet_pt[1]/jet_pt[1]) << std::endl;
-	if(abs(jet->PID) == 5) std::cout << "pt_lamb_S check : " << lambdasInjet_pt[0] << " , " << jet_pt[0] << " , ratio : " << (lambdasInjet_pt[0]/jet_pt[0])  << std::endl;
-        if(abs(jet->PID) == 3) std::cout << "pt_lamb_B check : " << lambdasInjet_pt[0] << " , " << jet_pt[0] << " , ratio : " << (lambdasInjet_pt[0]/jet_pt[0]) << std::endl;
-        if(abs(jet->PID) == 5) std::cout << "pt_lamb_B check : " << lambdasInjet_pt[1] << " , " << jet_pt[1] << " , ratio : " << (lambdasInjet_pt[1]/jet_pt[1])  << std::endl;
-        std::cout << "x_lamb check : " << x_lamb << " , " << x_lamb_S << " , " << x_lamb_B << std::endl;
-        std::cout << "rho_lamb check : " << rho_lamb << " , " << rho_lamb_S << " , " << rho_lamb_B << std::endl;
-*/
       }
 
       // save highest pT lepton only
@@ -561,8 +529,10 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
 
 //not completed
 void Finder(TTree * outtr){
-  auto dRCut = 0.5;
-  bool matched = false;
+  float dRCut = 0.5;
+  float mass_KS = 0.49761;
+  if(!jetFinder) matched = false;
+  //find s or b
   std::vector<const GenParticle*> genJets;
   for (unsigned i = 0; i < particles->GetEntries(); ++ i){
     auto p = (const GenParticle*) particles->At(i);
@@ -572,6 +542,7 @@ void Finder(TTree * outtr){
     auto jet = (const GenParticle*) particles->At(top->D2);
     genJets.push_back(jet);
   }
+  //find jet match to s or b
   auto njet = jets->GetEntries();
   for(size_t i = 0; i < njet; ++i){
     auto jet = (Jet*) jets->At(i);
@@ -582,11 +553,35 @@ void Finder(TTree * outtr){
       }
     }
     if(!matched) continue;
+    std::vector<Track*> track_cand;
     auto ndau = jet->Constituents.GetEntries();
+    //select first track
     for(size_t j=0; j < ndau; ++j){
-      auto dau = jet->Constituents.At(j);  
+      auto dau_1 = jet->Constituents.At(j);
+      auto dau_trk_1 = dynamic_cast<Track*>(dau_1);
+      if(dau_trk_1 && (abs(dau_trk_1->PID) != 11 && abs(dau_trk_1->PID) != 13)){
+        TLorentzVector dau_trk_tlv_1;
+	dau_trk_tlv_1.SetPtEtaPhiM(dau_trk_1->PT, dau_trk_1->Eta, dau_trk_1->Phi, 0.13957);
+	//select second track
+	for(auto k= j+1; k < ndau; ++k){
+	  auto dau_2 = jet->Constituents.At(k);
+	  auto dau_trk_2 = dynamic_cast<Track*>(dau_2);
+          if(dau_trk_2 && (abs(dau_trk_2->PID) != 11 && abs(dau_trk_2->PID) != 13)){
+            TLorentzVector dau_trk_tlv_2;
+            dau_trk_tlv_2.SetPtEtaPhiM(dau_trk_2->PT, dau_trk_2->Eta, dau_trk_2->Phi, 0.13957);
+	    float mass_pair = dau_trk_tlv_1.M()*cosh(dau_trk_tlv_1.Eta()) + dau_trk_tlv_2.M()*cosh(dau_trk_tlv_2.Eta());
+	    mass_track_pair.push_back(mass_pair);
+	    //pair matching
+	    if ( mass_pair - mass_KS < 0.1 && mass_pair - mass_KS > -0.1) { 
+	    
+	      mass_pion.push_back(mass_pair);
+	      std::cout << i << "th jet " << j << " th trk1 " << k << " th trk2 ==> check pair mass : " << mass_pair << " , abs(mass_pair - mass_KS) : " << mass_pair - mass_KS << " , track PID : " << dau_trk_1->PID << " , " << dau_trk_2->PID << std::endl;
+	    }
+	  }
+	}
+      }
     }
-  outtr->Fill();
+    outtr->Fill();
   }
   jetFinder = true;  
 }
