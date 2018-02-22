@@ -439,7 +439,7 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
             if (rho_lamb_S < 0) rho_lamb_S = -999;
             if (d_lamb_S < 0) d_lamb_S = -99;
           }
-          if(nkshortsInjet[0] > 0){
+          if(nlambdasInjet[0] > 0){
             x_lamb_B = (lambdasInjet_pt[0]/jet_pt[0]);
             rho_lamb_B = lambdasInjet_rho[0];
             d_lamb_B = lambdasInjet_d[0];
@@ -457,7 +457,7 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
             if (rho_lamb_B < 0) rho_lamb_B = -999;
             if (d_lamb_B < 0) d_lamb_B = -99;
           }
-          if(nkshortsInjet[0] > 0){
+          if(nlambdasInjet[0] > 0){
             x_lamb_S = (lambdasInjet_pt[0]/jet_pt[0]);
             rho_lamb_S = lambdasInjet_rho[0];
             d_lamb_S = lambdasInjet_d[0];
@@ -549,34 +549,33 @@ void Finder(TTree * outtr, TH2F * histo_M_dr){
     genJets.push_back(jet);
   }
   //find jet match to s or b
-
-  std::vector<float> mass_pion_cand;
-  std::vector<float> mass_pion_true_cand;
-
-  auto njet = jets->GetEntries();
-  auto nmatchedjet = 0;
-  for(size_t i = 0; i < njet; ++i){
-
+  std::vector<Jet*> jetCand;
+  nJets = jets->GetEntries();
+  for(size_t i = 0; i < nJets; ++i){
     matched=false;
+    nMatchedJets = -1;
     dr = -1;
-    dr_true = -1;
-    mass_track_pair.clear();
-    mass_pion_1.clear(); mass_pion_true_1.clear(); mass_pion_2.clear(); mass_pion_true_2.clear();
+    drTrue = -1;
+    massTrackPair.clear();
+    massPion1.clear(); massPionTrue1.clear(); massPion2.clear(); massPionTrue2.clear();
 
+    //jet matching
     auto jet = (Jet*) jets->At(i);
     for (auto& p : genJets) {
       float dR = DeltaR(jet->Eta - p->Eta, DeltaPhi(jet->Phi, p->Phi));
+      //std::cout << i << " th jet dR : " << dR << std::endl;
       if (dR < dRCut) {
+	jetCand.push_back(jet);
 	matched = true;
-	++nmatchedjet;
       }
     }
-    std::cout << nmatchedjet << std::endl;
+
+    if(i==nJets-1) nMatchedJets = jetCand.size();
 
     if(!matched) continue;
-    auto ndau = jet->Constituents.GetEntries();
+    auto nDau = jet->Constituents.GetEntries();
     //select first track
-    for(size_t j=0; j < ndau; ++j){
+    for(size_t j=0; j < nDau; ++j){
       auto dau_1 = jet->Constituents.At(j);
       auto dau_trk_1 = dynamic_cast<Track*>(dau_1);
       if(!dau_trk_1) continue;
@@ -584,7 +583,7 @@ void Finder(TTree * outtr, TH2F * histo_M_dr){
       TLorentzVector dau_trk_tlv_1;
       dau_trk_tlv_1.SetPtEtaPhiM(dau_trk_1->PT, dau_trk_1->Eta, dau_trk_1->Phi, 0.13957);
       //select second track
-      for(auto k= j+1; k < ndau; ++k){
+      for(auto k= j+1; k < nDau; ++k){
         auto dau_2 = jet->Constituents.At(k);
         auto dau_trk_2 = dynamic_cast<Track*>(dau_2);
         if(!dau_trk_2) continue;
@@ -594,25 +593,25 @@ void Finder(TTree * outtr, TH2F * histo_M_dr){
 	auto pair = dau_trk_tlv_1 + dau_trk_tlv_2;
 	float mass_pair = pair.M();
 	//float mass_pair = dau_trk_tlv_1.M()*cosh(dau_trk_tlv_1.Eta()) + dau_trk_tlv_2.M()*cosh(dau_trk_tlv_2.Eta()); // v = tanh(eta), c = 1 => gamma(v) = cosh(eta)
-	mass_track_pair.push_back(mass_pair);
+	massTrackPair.push_back(mass_pair);
 	//pair matching 
 	if ( fabs(mass_pair - mass_KS) < 0.1 ) {
-	  mass_pion_1.push_back(mass_pair);
-	  if(abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211) mass_pion_true_1.push_back(mass_pair);
+	  massPion1.push_back(mass_pair);
+	  if(abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211) massPionTrue1.push_back(mass_pair);
 	}
         if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < abs(dr)) {
           dr = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
-          mass_pion_2.push_back(mass_pair);
+          massPion2.push_back(mass_pair);
         }
         if ( abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211){
-          if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < abs(dr_true)) {
-	    dr_true = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
-	    mass_pion_true_2.push_back(mass_pair);
+          if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < abs(drTrue)) {
+	    drTrue = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
+	    massPionTrue2.push_back(mass_pair);
 	  }
 	}
       }
     }
-    if(mass_pion_2.size() >0) histo_M_dr->Fill(mass_pion_2[mass_pion_2.size()-1],dr);
+    if(massPion2.size() >0) histo_M_dr->Fill(massPion2[massPion2.size()-1],dr);
     outtr->Fill();
   }
   jetFinder = true;  

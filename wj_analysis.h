@@ -53,12 +53,15 @@ std::vector<int> nkshortsInjet, nlambdasInjet, nleptonsInjet;
 std::vector<float> jet1_diHadron_mass, jet2_diHadron_mass;
 
 //  Finder()
+
+int nJets;
 bool matched;
+int nMatchedJets;
 
-float dr, dr_true;
+float dr, drTrue;
 
-std::vector<float> mass_track_pair;
-std::vector<float> mass_pion_1, mass_pion_true_1, mass_pion_2, mass_pion_true_2;
+std::vector<float> massTrackPair;
+std::vector<float> massPion1, massPionTrue1, massPion2, massPionTrue2;
 
 //  global
 bool jetFinder = false;
@@ -112,12 +115,14 @@ void defBranchGen(TTree* outtr){
 }
 
 void defBranchFinder(TTree* outtr){
+
+  BranchI(nJets);
   BranchO(matched);
+  BranchI(nMatchedJets);
+  BranchF(dr); BranchF(drTrue);
 
-  BranchF(dr); BranchF(dr_true);
-
-  BranchVF(mass_track_pair);
-  BranchVF(mass_pion_1); BranchVF(mass_pion_true_1); BranchVF(mass_pion_2); BranchVF(mass_pion_true_2);
+  BranchVF(massTrackPair);
+  BranchVF(massPion1); BranchVF(massPionTrue1); BranchVF(massPion2); BranchVF(massPionTrue2);
 }
 
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p){
