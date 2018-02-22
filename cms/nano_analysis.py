@@ -4,7 +4,7 @@ import ROOT
 from ROOT import TFile, TCanvas, TTree, TH1F
 from math import hypot, pi
 
-f = TFile("result/20180212_135259_wn4045.sdfarm.kr_tbW/nanoAOD.root")
+f = TFile("result/20180214_110552_cms-t3-wn3009.sdfarm.kr_tsW/nanoAOD.root")
 #f = TFile("result/20180212_135216_wn4045.sdfarm.kr_tsW/nanoAOD.root")
 #f = TFile("result/20180214_132212_cms-t3-wn3022.sdfarm.kr_ttsWbW/nanoAOD.root")
 # # f.Events.Print()
@@ -32,7 +32,7 @@ import collections
 nS = 0; nSM = 0
 nB = 0; nBM = 0
 nSB = collections.defaultdict(lambda: 0)
-for e in f.Events:
+for iEv, e in enumerate(f.Events):
     nS = nB = 0
     q, qb = None, None
     isS = False
@@ -43,19 +43,29 @@ for e in f.Events:
         if 20 < f.Events.GenPart_status[j] < 30 and f.Events.GenPart_pdgId[j] == -5: qb = j; nB += 1
     if q is None: continue
     nSB[(nS, nB)] += 1
+    match = -1
     for j in xrange(f.Events.nKshort):
         if deltaR(f.Events.Kshort_eta[j], f.Events.Kshort_phi[j],
                   f.Events.GenPart_eta[q], f.Events.GenPart_phi[q]) < 0.5:
             if f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q] < 0.2: continue
-            if isS: nSM += 1
+            if isS: nSM += 1; match = j
             else: nBM += 1
-            print "Match q ", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q], f.Events.Kshort_pt[j]
+            print "Match q ", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[q], f.Events.Kshort_pt[j], iEv
         if deltaR(f.Events.Kshort_eta[j], f.Events.Kshort_phi[j],
                   f.Events.GenPart_eta[qb], f.Events.GenPart_phi[qb]) < 0.5:
             if f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb] < 0.2: continue
             if isS: nSM += 1
             else: nBM += 1
             print "Match qb", f.Events.Kshort_pt[j] / f.Events.GenPart_pt[qb], f.Events.Kshort_pt[j]
+    # if nSM > 0:
+    #     break
+    for j in xrange(f.Events.nV0GenPart):
+        if match >= 0 and deltaR(f.Events.Kshort_eta[match], f.Events.Kshort_phi[match],
+                                 f.Events.V0GenPart_eta[j], f.Events.V0GenPart_phi[j]) < 0.1 and \
+                                 abs(1.0 - f.Events.Kshort_pt[match] / f.Events.V0GenPart_pt[j]) < 0.1:
+            print "KSMatch", deltaR(f.Events.Kshort_eta[match], f.Events.Kshort_phi[match],
+                                 f.Events.V0GenPart_eta[j], f.Events.V0GenPart_phi[j]), abs(1.0 - f.Events.Kshort_pt[match] / f.Events.V0GenPart_pt[j])
+        
 
 #print "S ", nS, "B ", nB
 #print "SM", nSM, "BM", nBM
