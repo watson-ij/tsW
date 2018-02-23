@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   auto out = TFile::Open(outf.c_str(), "RECREATE");
   auto outtr = new TTree("tsw", "tsw");
 
-  //defBranchGen(outtr);
+  defBranchGen(outtr);
   defBranchFinder(outtr);
 
   TString cutflow_title = "cutflow" + inf;
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
     recoParticle(cutflow);
     genParticle(histo_dihadron_S, histo_dihadron_B);
-    Finder(outtr,histo_M_dr);
+    //Finder(outtr,histo_M_dr);
 
     /*
     // pion track test
@@ -598,12 +598,12 @@ void Finder(TTree * outtr, TH2F * histo_M_dr){
 	  massPion1.push_back(mass_pair);
 	  if(abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211) massPionTrue1.push_back(mass_pair);
 	}
-        if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < abs(dr)) {
+        if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < fabs(dr)) {
           dr = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
           massPion2.push_back(mass_pair);
         }
         if ( abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211){
-          if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < abs(drTrue)) {
+          if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < fabs(drTrue)) {
 	    drTrue = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
 	    massPionTrue2.push_back(mass_pair);
 	  }
