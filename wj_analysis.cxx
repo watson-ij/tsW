@@ -61,8 +61,8 @@ int main(int argc, char* argv[])
     trees->GetEntry(iev);
     initValues();
 
-    //recoParticle(cutflow);
-    //genParticle(histo_dihadron_S, histo_dihadron_B);
+    recoParticle(cutflow);
+    genParticle(histo_dihadron_S, histo_dihadron_B);
     Finder(outtr,histo_M_dr);
 
     /*
@@ -324,11 +324,11 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
         auto outR = sqrt(pow(kshortDau->X,2)+pow(kshortDau->Y,2)+pow(kshortDau->Z,2));
         kshortsInjet_outR.push_back(outR);
 
-	auto rho = sqrt(kshortsInjet[0].X*kshortsInjet[0].X + kshortsInjet[0].Y*kshortsInjet[0].Y);
-	kshortsInjet_rho.push_back(rho);
+        auto rho = sqrt(kshortDau->X*kshortDau->X + kshortDau->Y*kshortDau->Y);
 
-	auto pion = (GenParticle*) particles->At(kshortsInjet[0].D1);
-	std::vector<Double_t> PVtoKS = { pion->X, pion->Y, pion->Z };
+        kshortsInjet_rho.push_back(rho);
+
+	std::vector<Double_t> PVtoKS = { kshortDau->X, kshortDau->Y, kshortDau->Z };
 	std::vector<Double_t> momentum_unit = { (kshortsInjet[0].Px/sqrt(kshortsInjet[0].Px*kshortsInjet[0].Px + kshortsInjet[0].Py*kshortsInjet[0].Py + kshortsInjet[0].Pz*kshortsInjet[0].Pz )), (kshortsInjet[0].Py/sqrt(kshortsInjet[0].Px*kshortsInjet[0].Px + kshortsInjet[0].Py*kshortsInjet[0].Py + kshortsInjet[0].Pz*kshortsInjet[0].Pz )), (kshortsInjet[0].Pz/sqrt(kshortsInjet[0].Px*kshortsInjet[0].Px + kshortsInjet[0].Py*kshortsInjet[0].Py + kshortsInjet[0].Pz*kshortsInjet[0].Pz )) };
 	auto cross = cross3D(PVtoKS, momentum_unit);
 	auto d = sqrt(cross[0]*cross[0] + cross[1]*cross[1] + cross[2]*cross[2]);
@@ -407,11 +407,10 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
         auto outR = sqrt(pow(lambdaDau->X,2)+pow(lambdaDau->Y,2)+pow(lambdaDau->Z,2));
         lambdasInjet_outR.push_back(outR);
 
-        auto rho = sqrt(lambdasInjet[0].X*lambdasInjet[0].X + lambdasInjet[0].Y*lambdasInjet[0].Y);
+        auto rho = sqrt(lambdaDau->X*lambdaDau->X + lambdaDau->Y*lambdaDau->Y);
         lambdasInjet_rho.push_back(rho);
 
-        auto pion = (GenParticle*) particles->At(lambdasInjet[0].D1);
-        std::vector<Double_t> PVtoKS = { pion->X, pion->Y, pion->Z };
+        std::vector<Double_t> PVtoKS = { lambdaDau->X, lambdaDau->Y, lambdaDau->Z };
         std::vector<Double_t> momentum_unit = { (lambdasInjet[0].Px/sqrt(lambdasInjet[0].Px*lambdasInjet[0].Px + lambdasInjet[0].Py*lambdasInjet[0].Py + lambdasInjet[0].Pz*lambdasInjet[0].Pz )), (lambdasInjet[0].Py/sqrt(lambdasInjet[0].Px*lambdasInjet[0].Px + lambdasInjet[0].Py*lambdasInjet[0].Py + lambdasInjet[0].Pz*lambdasInjet[0].Pz )), (lambdasInjet[0].Pz/sqrt(lambdasInjet[0].Px*lambdasInjet[0].Px + lambdasInjet[0].Py*lambdasInjet[0].Py + lambdasInjet[0].Pz*lambdasInjet[0].Pz )) };
         auto cross = cross3D(PVtoKS, momentum_unit);
         auto d = sqrt(cross[0]*cross[0] + cross[1]*cross[1] + cross[2]*cross[2]);
