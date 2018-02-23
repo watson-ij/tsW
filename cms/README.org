@@ -14,6 +14,8 @@ cmsRun step2_DIGI_L1_DIGI2RAW_HLT.py
 cmsRun step3_RAW2DIGI_L1Reco_RECO_RECOSIM_EI_PAT_VALIDATION_DQM.py
 cmsRun nanoAOD_NANO.py
 
+Use /cms/merge.py to hadd after batching
+
 * Running CMSSW production
 
 Find workflow numbers
@@ -62,3 +64,136 @@ scram b -j 20
 cmsDriver.py nanoAOD -s NANO --mc --customise nano/nanoAOD/nano_cff.customise --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc --era Run2_2017 --no_exec
 # Change the input file to whatever you are running
 cmsRun nanoAOD_NANO.py
+* Notes about MCMatching of cmeson and V0Producer, etc.
+
+** [2018-02-20 Tue]
+
+As far as I can tell, need to run on AOD for cmeson mc matching
+information, but only the c meson info gets stored. MiniAOD stores the
+rest?
+
+For the cmeson reconstruction, it looks like the information in the
+MiniAOD isnt enough. We only have 1 or 3 degrees of freedom from the
+fitting.
+
+Working on understanding MiniAOD vs AOD vs V0Producer vs
+MesonProducer, etc. directory is:
+
+/cms/scratch/iwatson/tsW/cms/result/20180219_171825_cms-t3-wn3022.sdfarm.kr_ttsWbW
+
+Some code. Checking my KS code didnt affect the D0 candidates
+
+#+BEGIN_SRC
+
+import ROOT
+f1 = ROOT.TFile("nanoAOD_preKS.root")
+f2 = ROOT.TFile("nanoAOD.root")
+f2.Events.SetLineColor(ROOT.kRed)
+#
+f1.Events.Draw("meson_pt", "meson_pdgId==421", "")
+# Info in <TCanvas::MakeDefCanvas>:  created default TCanvas with name c1
+# 48L
+f2.Events.Draw("meson_pt", "meson_pdgId==421", "same")
+# 48L
+
+# Looks good. Now compare my KS with V0Producer KS. One problem,
+# MesonProducer only produces V0 inside jets...
+
+
+f1 = ROOT.TFile("nanoAOD_NANO_fromAOD.root")
+f1.Events.Draw("V0ProducerKS_pdgId", "", "")
+#
+f2.Events.Draw("sqrt(meson_x*meson_x+meson_y*meson_y)", "meson_pdgId==310", "")
+f1.Events.Draw("sqrt(V0ProducerKS_x*V0ProducerKS_x+V0ProducerKS_y*V0ProducerKS_y)", "", "same")
+#
+f1.Events.Draw("V0ProducerKS_ndof", "", "")
+f2.Events.Draw("meson_ndof", "meson_pdgId==310", "same")
+#
+f2.Events.Draw("meson_chi2", "meson_pdgId==310 && sqrt(meson_x*meson_x+meson_y*meson_y) > 0.1", "")
+f1.Events.Draw("V0ProducerKS_chi2", "", "same")
+
+# Hmm, definitely don't go as far out in meson in rho than in V0Producer
+f1.Events.GetEntry(10)
+f2.Events.GetEntry(10)
+
+f2.Events.Kshort_eta[0], f2.Events.Kshort_phi[0], f2.Events.Kshort_chi2[0], f1.Events.V0ProducerKS_eta[0], f1.Events.V0ProducerKS_phi[0], f1.Events.V0ProducerKS_chi2[0]
+
+# Okay, at the very least, the Kshort in the MiniAOD are exactly the same as those I create myself.
+# But, cant find these V0Producer KShort in the meson_* branches
+
+#+END_SRC
+
+Trying to run over the PFCandidates instead of the jets.
+
+MesonProducer runs over all PFCandidates, CMesonProducer over jet
+cands. One point: V0Producer finds V0 anywhere, really need to match
+to our jets to properly find a test case. Anyway..
+
+f.Events.Kshort_eta[0], f.Events.Kshort_phi[0]
+[(i, f.Events.meson_eta[i], f.Events.meson_phi[i]) for i in range(f.Events.nmeson)]
+
+f.Events.Kshort_pt[0], f.Events.Kshort_x[0], f.Events.Kshort_y[0], f.Events.Kshort_z[0]
+f.Events.meson_pt[110], f.Events.meson_x[110], f.Events.meson_y[110], f.Events.meson_z[110]
+f.Events.meson_pt[112], f.Events.meson_x[112], f.Events.meson_y[112], f.Events.meson_z[112]
+
+f.Events.Kshort_chi2[0], f.Events.Kshort_ndof[0], f.Events.meson_chi2[110], f.Events.meson_ndof[110]
+
+Hmm, so if we loop over all the pfcands it does seem to exist. Thats nice. The chi2 is much smaller though.
+
+[(i, f.Events.cmeson_eta[i], f.Events.cmeson_phi[i]) for i in range(f.Events.ncmeson)]
+
+for i in range(f.Events.GetEntries()):
+ _ = f.Events.GetEntry(i)
+ if f.Events.nKshort > 0:
+  print i, f.Events.nKshort, [(f.Events.Kshort_eta[i], f.Events.Kshort_phi[i]) for i in range(f.Events.nKshort)], [(i, f.Events.meson_eta[i], f.Events.meson_phi[i]) for i in range(f.Events.nmeson)]
+  break
+
+In event 13 of our test, there is indeed a matching meson inside the
+jet, and its properties end up very similar to our V0Producer version
+(still has lower chi2 but).
+
+for i in range(f.Events.GetEntries()):
+ _ = f.Events.GetEntry(i)
+ if f.Events.nKshort > 0:
+  print i, f.Events.nKshort, [(f.Events.Kshort_eta[i], f.Events.Kshort_phi[i]) for i in range(f.Events.nKshort)], [(i, f.Events.cmeson_eta[i], f.Events.cmeson_phi[i]) for i in range(f.Events.ncmeson)]
+  break
+
+f.Events.Kshort_pt[0], f.Events.Kshort_chi2[0], f.Events.Kshort_ndof[0], f.Events.cmeson_pt[0], f.Events.cmeson_chi2[0], f.Events.cmeson_ndof[0]
+
+Okay. Looks sensible, and we can do either all the PFCands, or only the jet PFCands.
+
+Next question: Why is the track chi2 always integral?
+
+** [2018-02-20 Tue] Important observations
+
+- The V0 from V0Producer run on AOD end up same as the ones inside MiniAOD (good!)
+- The V0 from V0Producer have a requirement of being at least 1mm xy from the PV (it seems).
+- CMesonProducer only produces candidates inside jet
+  - When we look for V0Producer and CMesonProducer matches, can find
+    them. CMesonProducer in general has more candidates than
+    V0Producer (since allows from vertex?)
+  - If we expand to allow from any PFCandidate (MesonProducer), then
+    we seem to be able to find all the V0Producer
+- (C)MesonProducer-style candidates end with similar properties to
+  V0Producer, but with a bit lower chi2 in general (e.g. 4.14 vs 3.95)
+
+** [2018-02-22 Thu]
+
+Yesterday was basically a failure. The MiniAOD really doesn't seem to
+have the right tracks, i.e. none of the packed candidates (suppose to
+be all the stable reconstructed particles) can make up a pair with the
+mass of a Kshort!
+
+Lets concentrate on seeing what we can do with the AOD. We'll have to
+merge the AOD matching results back in later on.
+
+Its worse than all that. Playing with ttswbw.py, the reconstructed C
+meson collection only has tracks within ~ 0.5cm of the primary vertex,
+whereas the V0Producer collection goes out past 10cm.
+
+Hypothesis about V0 vs cmeson: V0Producer can take tracks outside the
+jet cone, so though we require a Kshort inside the jet cone, cmeson can
+only do tracks inside the cone. As V0 takes any tracks, should be more,
+but they should also probably be low x (if high x then they take most of
+the energy and therefore define the jet cone). Need to test this hypothesis.
+If so, what should we do? Fine to take only jettracks?
