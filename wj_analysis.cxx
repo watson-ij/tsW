@@ -53,8 +53,6 @@ int main(int argc, char* argv[])
   TH1F * histo_rho_lamb = new TH1F("hist_rho_lamb", "hist_rho_lamb", 1800, 0, 18000);
   TH1F * histo_d_lamb = new TH1F("hist_d_lamb", "hist_d_lamb", 1000, 0, 100);
 
-  TH2F * histo_M_dr = new TH2F("hist_M_dr", "hist_M_dr" ,1000, 0, 5, 1000, 0,1);
-
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
     if (iev%1000 == 0 ) std::cout << "event check    iev    ----> " << iev << std::endl;
@@ -63,7 +61,6 @@ int main(int argc, char* argv[])
 
     recoParticle(cutflow);
     genParticle(histo_dihadron_S, histo_dihadron_B);
-    //Finder(outtr,histo_M_dr);
 
     /*
     // pion track test
@@ -79,7 +76,7 @@ int main(int argc, char* argv[])
       }
     }
     */
-    if(!jetFinder)outtr->Fill();
+    outtr->Fill();
   }
 
   tfiles->Close();
@@ -109,8 +106,6 @@ int main(int argc, char* argv[])
   histo_d_lamb->Write();
 
   cutflow->Write();
-
-  histo_M_dr->Write();
 
   histo_dihadron_S->Write();
   histo_dihadron_B->Write();
@@ -531,89 +526,6 @@ void genParticle(TH1F * histo_dihadron_S, TH1F * histo_dihadron_B){
       if (genDilep.M() > 20. && genLeps[0].charge * genLeps[1].charge < 0 ) gen_step1 = true;
     }
 
-}
-
-//not completed
-void Finder(TTree * outtr, TH2F * histo_M_dr){
-  float dRCut = 0.5;
-  float mass_KS = 0.49761;
-  //find s or b
-  std::vector<const GenParticle*> genJets;
-  for (unsigned i = 0; i < particles->GetEntries(); ++ i){
-    auto p = (const GenParticle*) particles->At(i);
-    if (p->Status > 30) continue;
-    if (abs(p->PID) != 6) continue;
-    auto top = getLast(particles,p);
-    auto jet = (const GenParticle*) particles->At(top->D2);
-    genJets.push_back(jet);
-  }
-  //find jet match to s or b
-  std::vector<Jet*> jetCand;
-  nJets = jets->GetEntries();
-  for(size_t i = 0; i < nJets; ++i){
-    matched=false;
-    nMatchedJets = -1;
-    dr = -1;
-    drTrue = -1;
-    massTrackPair.clear();
-    massPion1.clear(); massPionTrue1.clear(); massPion2.clear(); massPionTrue2.clear();
-
-    //jet matching
-    auto jet = (Jet*) jets->At(i);
-    for (auto& p : genJets) {
-      float dR = DeltaR(jet->Eta - p->Eta, DeltaPhi(jet->Phi, p->Phi));
-      //std::cout << i << " th jet dR : " << dR << std::endl;
-      if (dR < dRCut) {
-	jetCand.push_back(jet);
-	matched = true;
-      }
-    }
-
-    if(i==nJets-1) nMatchedJets = jetCand.size();
-
-    if(!matched) continue;
-    auto nDau = jet->Constituents.GetEntries();
-    //select first track
-    for(size_t j=0; j < nDau; ++j){
-      auto dau_1 = jet->Constituents.At(j);
-      auto dau_trk_1 = dynamic_cast<Track*>(dau_1);
-      if(!dau_trk_1) continue;
-      else if(abs(dau_trk_1->PID) == 11 || abs(dau_trk_1->PID) == 13) continue;
-      TLorentzVector dau_trk_tlv_1;
-      dau_trk_tlv_1.SetPtEtaPhiM(dau_trk_1->PT, dau_trk_1->Eta, dau_trk_1->Phi, 0.13957);
-      //select second track
-      for(auto k= j+1; k < nDau; ++k){
-        auto dau_2 = jet->Constituents.At(k);
-        auto dau_trk_2 = dynamic_cast<Track*>(dau_2);
-        if(!dau_trk_2) continue;
-        else if(abs(dau_trk_2->PID) == 11 || abs(dau_trk_2->PID) == 13) continue;
-        TLorentzVector dau_trk_tlv_2;
-        dau_trk_tlv_2.SetPtEtaPhiM(dau_trk_2->PT, dau_trk_2->Eta, dau_trk_2->Phi, 0.13957);
-	auto pair = dau_trk_tlv_1 + dau_trk_tlv_2;
-	float mass_pair = pair.M();
-	//float mass_pair = dau_trk_tlv_1.M()*cosh(dau_trk_tlv_1.Eta()) + dau_trk_tlv_2.M()*cosh(dau_trk_tlv_2.Eta()); // v = tanh(eta), c = 1 => gamma(v) = cosh(eta)
-	massTrackPair.push_back(mass_pair);
-	//pair matching 
-	if ( fabs(mass_pair - mass_KS) < 0.1 ) {
-	  massPion1.push_back(mass_pair);
-	  if(abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211) massPionTrue1.push_back(mass_pair);
-	}
-        if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < fabs(dr)) {
-          dr = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
-          massPion2.push_back(mass_pair);
-        }
-        if ( abs(dau_trk_1->PID) == 211 & abs(dau_trk_2->PID) == 211){
-          if (dau_trk_tlv_1.DeltaR(dau_trk_tlv_2) < fabs(drTrue)) {
-	    drTrue = dau_trk_tlv_1.DeltaR(dau_trk_tlv_2);
-	    massPionTrue2.push_back(mass_pair);
-	  }
-	}
-      }
-    }
-    if(massPion2.size() >0) histo_M_dr->Fill(massPion2[massPion2.size()-1],dr);
-    outtr->Fill();
-  }
-  jetFinder = true;  
 }
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck){
 }

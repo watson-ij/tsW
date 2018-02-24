@@ -2,6 +2,9 @@
 # singularity ~/Images/Madgraph.img make run_tsW_dilep
 
 
+wj_jetAnalyser : wj_jetAnalyser.cxx
+	g++ -g -std=c++1y -o wj_jetAnalyser wj_jetAnalyser.cxx -L/code/MG5_aMC_v2_6_0/Delphes/ -I../../install/include `root-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/Delphes/ -I/code/MG5_aMC_v2_6_0/Delphes/external -lEG -lDelphes
+
 wj_analysis : wj_analysis.cxx
 	g++ -g -std=c++1y -o wj_analysis wj_analysis.cxx -L/code/MG5_aMC_v2_6_0/Delphes/ -I../../install/include `root-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/Delphes/ -I/code/MG5_aMC_v2_6_0/Delphes/external -lEG -lDelphes
 
