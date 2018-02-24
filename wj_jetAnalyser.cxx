@@ -13,7 +13,7 @@
 #include "TTreeReaderValue.h"
 
 #include "classes/DelphesClasses.h"
-#include "wj_analysis.h"
+#include "wj_jetAnalyser.h"
 
 int main(int argc, char* argv[])
 {
