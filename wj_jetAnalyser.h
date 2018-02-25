@@ -7,9 +7,9 @@
 #define BranchAI(name, size) BranchA_(Int_t, name, size, I);
 #define BranchAF(name, size) BranchA_(Float_t, name, size, F);
 #define BranchAO(name, size) BranchA_(Bool_t, name, size, O);
-#define BranchVF(name) outtr->Branch(#name, "vector<float>", &name);
-#define BranchVI(name) outtr->Branch(#name, "vector<int>", &name);
-#define BranchVO(name) outtr->Branch(#name, "vector<bool>", &name);
+#define BranchVF(name) std::vector<float> name; outtr->Branch(#name, "vector<float>", &name);
+#define BranchVI(name) std::vector<int> name; outtr->Branch(#name, "vector<int>", &name);
+#define BranchVO(name) std::vector<bool> name; outtr->Branch(#name, "vector<bool>", &name);
 
 #define BranchP_(type, br, name, suffix) type name = 0; TBranch *br =  outtr->Branch(#name, &name, #name "/" #suffix);
 #define BranchPI(br,name) BranchP_(Int_t, br,name, I);
