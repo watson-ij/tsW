@@ -40,7 +40,6 @@ int main(int argc, char* argv[])
   auto outtr = new TTree("tsw", "tsw");
 
   defBranchGen(outtr);
-  defBranchFinder(outtr);
 
   TString cutflow_title = "cutflow" + inf;
   TH1F * cutflow = new TH1F("cutflow", cutflow_title, 7,-1,6); // -1 : all events, 0 : events after lepton selection, 1~ : events after step
@@ -122,36 +121,26 @@ int main(int argc, char* argv[])
 
 void initValues(){
     // genParticle()
-    if (!jetFinder){
-      dilepton_mass = -99; dilepton_ch = 0; 
+    dilepton_mass = -99; dilepton_ch = 0; 
 
-      x_KS = -1; x_KS_S = -1; x_KS_B = -1; rho_KS = -99; rho_KS_S = -99; rho_KS_B = -99; d_KS = -99; d_KS_S = -99; d_KS_B = -99;
-      x_lamb = -1; x_lamb_S = -1; x_lamb_B = -1; rho_lamb = -999; rho_lamb_S = -999; rho_lamb_B = -999; d_lamb = -99; d_lamb_S = -99; d_lamb_B = -99;
+    x_KS = -1; x_KS_S = -1; x_KS_B = -1; rho_KS = -99; rho_KS_S = -99; rho_KS_B = -99; d_KS = -99; d_KS_S = -99; d_KS_B = -99;
+    x_lamb = -1; x_lamb_S = -1; x_lamb_B = -1; rho_lamb = -999; rho_lamb_S = -999; rho_lamb_B = -999; d_lamb = -99; d_lamb_S = -99; d_lamb_B = -99;
 
-      significance_S = -99; significance_B = -99;
+    significance_S = -99; significance_B = -99;
 
-      channel = 0;
+    channel = 0;
 
-      gen_step0 = false; gen_step1 = false;
+    gen_step0 = false; gen_step1 = false;
 
-      jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
-      jet_pid.clear();
+    jet_pt.clear(); jet_eta.clear(); jet_phi.clear(); jet_energy.clear();
+    jet_pid.clear();
 
-      kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear(); kshortsInjet_rho.clear(); kshortsInjet_d.clear();
-      lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear(); lambdasInjet_rho.clear(); lambdasInjet_d.clear();
-      leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
-      nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
+    kshortsInjet_pt.clear(); kshortsInjet_eta.clear(); kshortsInjet_phi.clear(); kshortsInjet_energy.clear(); kshortsInjet_R.clear(); kshortsInjet_outR.clear(); kshortsInjet_rho.clear(); kshortsInjet_d.clear();
+    lambdasInjet_pt.clear(); lambdasInjet_eta.clear(); lambdasInjet_phi.clear(); lambdasInjet_energy.clear(); lambdasInjet_R.clear(); lambdasInjet_outR.clear(); lambdasInjet_rho.clear(); lambdasInjet_d.clear();
+    leptonsInjet_pt.clear(); leptonsInjet_eta.clear(); leptonsInjet_phi.clear(); leptonsInjet_energy.clear(); leptonsInjet_R.clear();
+    nkshortsInjet.clear(); nlambdasInjet.clear(); nleptonsInjet.clear();
 
-      jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
-    }
-/*
-    // Finder()
-    else {
-      matched = false;
-      mass_track_pair.clear();
-      mass_pion.clear();
-    }
-*/
+    jet1_diHadron_mass.clear(); jet2_diHadron_mass.clear();
 }
 
 void recoParticle(TH1F * cutflow){
