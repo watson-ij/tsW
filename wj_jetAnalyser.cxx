@@ -169,13 +169,9 @@ int main(int argc, char* argv[])
       for (auto trk1m = 0; trk1m < trk1mom.size(); ++trk1m){
         for(auto trk2m = trk1m+1; trk2m < trk1mom.size(); ++trk2m){
           if (trk1mom[trk1m] == trk1mom[trk2m]) {
-	    TLorentzVector trk1m_tlv;
-            TLorentzVector trk2m_tlv;
-
-	    trk1m_tlv = trk1mom[trk1m]->P4();
-            trk2m_tlv = trk1mom[trk2m]->P4();
-
-	    std::cout << iev << " th event " << i << " th jet ==> trk1 : " << trk1m << " , trk2 : " << trk2m << " Pt : " << trk1m_tlv.Pt() << " , " << trk2m_tlv.Pt() << " Eta : " << trk1m_tlv.Eta() << " , " << trk2m_tlv.Eta() << " Phi : " << trk1m_tlv.Phi() << " , " << trk2m_tlv.Phi() << " Mass :" << trk1m_tlv.M() << " , " << trk2m_tlv.M() << std::endl;
+	    TLorentzVector trk1m_tlv = trk1mom[trk1m]->P4();
+            TLorentzVector trk2m_tlv = trk1mom[trk2m]->P4();
+	    //std::cout << iev << " th event " << i << " th jet ==> trk1 : " << trk1m << " , trk2 : " << trk2m << " Pt : " << trk1m_tlv.Pt() << " , " << trk2m_tlv.Pt() << " Eta : " << trk1m_tlv.Eta() << " , " << trk2m_tlv.Eta() << " Phi : " << trk1m_tlv.Phi() << " , " << trk2m_tlv.Phi() << " Mass :" << trk1m_tlv.M() << " , " << trk2m_tlv.M() << std::endl;
             trkmomKS.push_back(trk1mom[trk1m]); 
           }
         }
