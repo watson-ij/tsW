@@ -35,29 +35,109 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("MissingET",   &missingET);
   trees->SetBranchAddress("Track",       &tracks);
 
-  //make out file
+  //make output file
   auto out = TFile::Open(outf.c_str(), "RECREATE");
   auto outtr = new TTree("tsw", "tsw");
 
-  BranchI(nJets);  BranchI(nMatchedJets); BranchI(partonId);
+  //make Branches
+  //[1] Event selection
+  BranchI(chDilepton); 
+  BranchF(massDilepton);
+  //[2] General jet information
+  BranchI(nJets);
   BranchF(pt); BranchF(eta); BranchF(phi); BranchF(nmult); BranchF(cmult);
-  BranchO(matched);
+  //[3] Jet matching
+  BranchI(nMatchedJets); BranchI(partonId);
+  BranchO(matched); BranchO(doubleMatched);
+  BranchVF(matchedJetPID); BranchVF(matcheddR);
+  //[4] Track
   BranchF(dr); BranchF(drTrue);
+  BranchVF(massTrackPair); BranchVF(massPion1); BranchVF(massPionTrue1); BranchVF(massPion2); BranchVF(massPionTrue2);
+  BranchVF(nKSInMatchedJet);
 
-  BranchVF(matchedJetPID); BranchVF(matcheddR); BranchVF(nKSInMatchedJet);
-
-  BranchVF(massTrackPair);
-  BranchVF(massPion1); BranchVF(massPionTrue1); BranchVF(massPion2); BranchVF(massPionTrue2);
-
+  //make Histograms
+  TString cutflow_title = "cutflow" + inf;
+  TH1F * cutflow = new TH1F("cutflow", cutflow_title, 7,-1,6); // -1 : all events, 0 : events after lepton selection, 1~ : events after step
   TH2F * histo_M_dr = new TH2F("hist_M_dr", "hist_M_dr" ,1000, 0, 5, 1000, 0,1);
 
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
     if (iev%1000 == 0 ) std::cout << "event check    iev    ----> " << iev << std::endl;
     trees->GetEntry(iev);
+
     //some cuts
     float dRCut = 0.5;
     float mass_KS = 0.49761;
+
+    //Event Selection Start
+    massDilepton = -99;
+    chDilepton = 0;
+    cutflow->Fill(-1);
+    // object selection
+    std::vector<struct Lepton> recolep;
+    for (unsigned i = 0; i < muons->GetEntries(); ++i){
+      auto mu = (Muon*) muons->At(i);
+      if (abs(mu->Eta) > 2.4) continue;
+      if (mu->PT < 20.) continue;
+      recolep.push_back(toLepton(mu));
+    }
+    for (unsigned j = 0; j < electrons->GetEntries(); ++j){
+      auto elec = (Electron*) electrons->At(j);
+      if (abs(elec->Eta) > 2.4) continue;
+      if (elec->PT < 20.) continue;
+      recolep.push_back(toLepton(elec));
+    }
+
+    // pick highest pt lep pair
+    if (recolep.size() < 2 ) continue;
+
+    sort(recolep.begin(), recolep.end(), [](struct Lepton a, struct Lepton b){return a.tlv.Pt() > b.tlv.Pt();});
+    recolep.erase(recolep.begin()+2,recolep.end());
+
+    cutflow->Fill(0);
+
+    auto dilepton = recolep[0].tlv + recolep[1].tlv;
+    chDilepton = abs(recolep[0].pdgid) + abs(recolep[1].pdgid); // 22 -> ee , 24 -> emu , 26 -> mumu
+    massDilepton = dilepton.M();
+
+    // step 1
+    if(dilepton.M() < 20. || recolep[0].charge * recolep[1].charge > 0 ) continue;
+    cutflow->Fill(1);
+
+    // step2    
+    if ( (chDilepton != 24) && ( dilepton.M() > 76. && dilepton.M() < 106.) ) continue;
+    cutflow->Fill(2);
+
+    // step3
+    auto met = ((MissingET*) missingET->At(0))->MET;
+    if ( (chDilepton != 24) && (met < 40.) ) continue;
+    cutflow->Fill(3);
+
+    // step4
+    std::vector<Jet*> selectedJets;
+    for ( unsigned k = 0; k < jets->GetEntries(); ++k){
+      auto jet = (Jet*) jets->At(k);
+      if (jet->PT < 30.) continue;
+      if (abs(jet->Eta) > 2.4) continue;
+      bool hasOverlap = false;
+      for (auto lep : recolep) { if ((jet->P4()).DeltaR(lep.tlv) < 0.4) hasOverlap = true; }
+      if (hasOverlap) continue;
+      selectedJets.push_back(jet);
+    }
+    if (selectedJets.size() < 2) continue;
+    cutflow->Fill(4);
+
+/*
+    // step5
+    std::vector<Jet*> selectedBJets;
+    for (auto jet : selectedJets){
+      if (jet->BTag) selectedBJets.push_back(jet);
+    }
+    if (selectedBJets.size() < 1) continue;
+    cutflow->Fill(5);
+*/
+
+
     //find s or b
     std::vector<const GenParticle*> genJets;
     for (unsigned i = 0; i < particles->GetEntries(); ++ i){
@@ -69,41 +149,51 @@ int main(int argc, char* argv[])
       genJets.push_back(jet);
     }
     //find jet match to s or b    
-    std::vector<Jet*> jetCand;
+    std::vector<Jet*> matchedJet;
     nJets = jets->GetEntries();
-
-    for(size_t i = 0; i < nJets; ++i){
+    for(size_t i = 0; i < jets->GetEntries(); ++i){
       auto jet = (Jet*) jets->At(i);
       auto jetGenInfo = (const GenParticle*) jets->At(i);
 
-      matched=false;
+      pt = jet->PT; eta = jet->Eta; phi = jet->Phi; nmult = jet->NNeutrals; cmult = jet->NCharged;
+
       nMatchedJets = -1;
+      matched = false; 
+      doubleMatched = false;
+      matchedJetPID.clear(); matcheddR.clear();
+
       dr = -1; drTrue = -1;
       massTrackPair.clear();
       massPion1.clear(); massPionTrue1.clear(); massPion2.clear(); massPionTrue2.clear();
-
-      matchedJetPID.clear(); matcheddR.clear(); nKSInMatchedJet.clear();
+      nKSInMatchedJet.clear();
 
       //jet matching
+      std::vector<bool> doubleCheck;
       const GenParticle *match = 0;
       for (auto& p : genJets) {
         float dR = DeltaR(jet->Eta - p->Eta, DeltaPhi(jet->Phi, p->Phi)); 
         if (dR < dRCut) {
-          jetCand.push_back(jet);
           matched = true;
 	  match = p;
 	  matchedJetPID.push_back(jetGenInfo->PID);
 	  matcheddR.push_back(dR);
+	  doubleCheck.push_back(matched);
         }
       }
-      if(!matched) continue;
-
-      pt = jet->PT; eta = jet->Eta; phi = jet->Phi; nmult = jet->NNeutrals; cmult = jet->NCharged;
-      if (match)
-        partonId = match->PID;
-      else
-        partonId = 0;
-      if(i==nJets-1) nMatchedJets = jetCand.size();
+      if(doubleCheck.size() == 2) doubleMatched = true; 
+      if(match){
+	 matchedJet.push_back(jet);
+	 partonId = match->PID;
+      }
+      else partonId = 0;
+      if(i == jets->GetEntries() - 1) nMatchedJets = matchedJet.size();
+      if(!matched){
+	outtr->Fill();
+        massDilepton = -99;
+        chDilepton = 0;
+        nJets = -1;
+	continue;
+      }
 
 /*
       TLorentzVector jet_tlv = jet->P4();
@@ -191,12 +281,18 @@ int main(int argc, char* argv[])
 
       if(massPion2.size() >0) histo_M_dr->Fill(massPion2[massPion2.size()-1],dr);
       outtr->Fill();
+      massDilepton = -99;
+      chDilepton = 0;
+      nJets = -1;
     }
   }
+
   tfiles->Close();
   outtr->Write();
+  cutflow->Write();
   histo_M_dr->Write();
   out->Close();
+
   //check cpu time (end)
   std::clock_t c_end = std::clock();
   long double time_elapsed_ms = 1000.0 * (c_end - c_start) / CLOCKS_PER_SEC;
