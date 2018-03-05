@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
   Float_t b_Kshort_eta[10000];
   Float_t b_Kshort_phi[10000];
   Float_t b_Kshort_pt[10000];
-  Float_t b_Kshort_M[10000];
+  Float_t b_Kshort_mass[10000];
 
   UInt_t b_nmeson;
   Int_t b_meson_pdgId[10000];
@@ -55,13 +55,13 @@ int main(int argc, char* argv[])
   Float_t b_meson_eta[10000];
   Float_t b_meson_phi[10000];
   Float_t b_meson_pt[10000];
-  Float_t b_meson_M[10000];
+  Float_t b_meson_mass[10000];
   Float_t b_meson_chi2[10000];
   Float_t b_meson_dca[10000];
   Float_t b_meson_lxy[10000];
   Float_t b_meson_angleXY[10000];
 
-  UInt_t nCMeson;
+  UInt_t b_ncmeson;
   Int_t b_cmeson_pdgId[10000];
   Float_t b_cmeson_x[10000];
   Float_t b_cmeson_y[10000];
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
   Float_t b_cmeson_eta[10000];
   Float_t b_cmeson_phi[10000];
   Float_t b_cmeson_pt[10000];
-  Float_t b_cmeson_M[10000];
+  Float_t b_cmeson_mass[10000];
   Float_t b_cmeson_chi2[10000];
   Float_t b_cmeson_dca[10000];
   Float_t b_cmeson_lxy[10000];
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("Kshort_y", b_Kshort_y);
   trees->SetBranchAddress("Kshort_z", b_Kshort_z);
   trees->SetBranchAddress("Kshort_pt", b_Kshort_pt);
-  trees->SetBranchAddress("Kshort_mass", b_Kshort_M);
+  trees->SetBranchAddress("Kshort_mass", b_Kshort_mass);
 
   trees->SetBranchAddress("nmeson", &b_nmeson);
   trees->SetBranchAddress("meson_pdgId", b_meson_pdgId);
@@ -104,13 +104,13 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("meson_y", b_meson_y);
   trees->SetBranchAddress("meson_z", b_meson_z);
   trees->SetBranchAddress("meson_pt", b_meson_pt);
-  trees->SetBranchAddress("meson_mass", b_meson_M);
+  trees->SetBranchAddress("meson_mass", b_meson_mass);
   trees->SetBranchAddress("meson_chi2", b_meson_chi2);
   trees->SetBranchAddress("meson_dca", b_meson_dca);
   trees->SetBranchAddress("meson_lxy", b_meson_lxy);
   trees->SetBranchAddress("meson_angleXY", b_meson_angleXY);
 
-  trees->SetBranchAddress("ncmeson", &nCMeson);
+  trees->SetBranchAddress("ncmeson", &b_ncmeson);
   trees->SetBranchAddress("cmeson_pdgId", b_cmeson_pdgId);
   trees->SetBranchAddress("cmeson_eta", b_cmeson_eta);
   trees->SetBranchAddress("cmeson_phi", b_cmeson_phi);
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("cmeson_y", b_cmeson_y);
   trees->SetBranchAddress("cmeson_z", b_cmeson_z);
   trees->SetBranchAddress("cmeson_pt", b_cmeson_pt);
-  trees->SetBranchAddress("cmeson_mass", b_cmeson_M);
+  trees->SetBranchAddress("cmeson_mass", b_cmeson_mass);
   trees->SetBranchAddress("cmeson_chi2", b_cmeson_chi2);
   trees->SetBranchAddress("cmeson_dca", b_cmeson_dca);
   trees->SetBranchAddress("cmeson_lxy", b_cmeson_lxy);
@@ -212,8 +212,8 @@ int main(int argc, char* argv[])
         if(isS){
 	  nSM += 1;
 	  match.push_back(k);
-	  hV->Fill(b_Kshort_M[k]);
-	  if (fabs(b_Kshort_M[k] - 0.50) < 0.02){
+	  hV->Fill(b_Kshort_mass[k]);
+	  if (fabs(b_Kshort_mass[k] - 0.50) < 0.02){
 	    hV2D->Fill(vL2D(b_Kshort_x[k], b_Kshort_y[k]));
 	    hVx->Fill(b_Kshort_pt[k]/b_Jet_pt[qj]);
 	    hVj->Fill(dr);
@@ -221,8 +221,8 @@ int main(int argc, char* argv[])
 	}
 	else{
 	  nBM += 1;
-	  hV->Fill(b_Kshort_M[k]);
-          if (fabs(b_Kshort_M[k] - 0.50) < 0.02){
+	  hV->Fill(b_Kshort_mass[k]);
+          if (fabs(b_Kshort_mass[k] - 0.50) < 0.02){
             hV2D->Fill(vL2D(b_Kshort_x[k], b_Kshort_y[k]));
             hVx->Fill(b_Kshort_pt[k]/b_Jet_pt[qj]);
             hVj->Fill(dr);
@@ -234,8 +234,8 @@ int main(int argc, char* argv[])
 	if(isS){
 	  nSM +=1;
 	  match.push_back(k);
-          hV->Fill(b_Kshort_M[k]);
-          if (fabs(b_Kshort_M[k] - 0.50) < 0.02){
+          hV->Fill(b_Kshort_mass[k]);
+          if (fabs(b_Kshort_mass[k] - 0.50) < 0.02){
             hV2D->Fill(vL2D(b_Kshort_x[k], b_Kshort_y[k]));
 	    hV3D->Fill(vL3D(b_Kshort_x[k], b_Kshort_y[k], b_Kshort_z[k]));
             hVx->Fill((b_Kshort_pt[k]/b_Jet_pt[qbj]));
@@ -244,12 +244,12 @@ int main(int argc, char* argv[])
 	}
 	else{
           nBM += 1;
-          hV->Fill(b_Kshort_M[k]);
-          if (fabs(b_Kshort_M[k] - 0.50) < 0.02){
+          hV->Fill(b_Kshort_mass[k]);
+          if (fabs(b_Kshort_mass[k] - 0.50) < 0.02){
             hV2D->Fill(vL2D(b_Kshort_x[k], b_Kshort_y[k]));
 	    hV3D->Fill(vL3D(b_Kshort_x[k], b_Kshort_y[k], b_Kshort_z[k]));
             hVx->Fill((b_Kshort_pt[k]/b_Jet_pt[qbj]));
-            hVj->Fill(dr);
+            hVj->Fill(drb);
           }
 	}
       }
@@ -263,10 +263,10 @@ int main(int argc, char* argv[])
 	if(isS){
 	  nSM += 1;
 	  match.push_back(m);
-	  hM->Fill(b_meson_M[m]);
+	  hM->Fill(b_meson_mass[m]);
 	  if(fabs(b_meson_chi2[m]) < 1.0 && b_meson_dca[m] < 0.2 && b_meson_lxy[m] > 0.25 && b_meson_angleXY[m] > 0){
-	    hMc->Fill(b_meson_M[m]);
-	    if(fabs(b_meson_M[m] - 0.50) < 0.02){
+	    hMc->Fill(b_meson_mass[m]);
+	    if(fabs(b_meson_mass[m] - 0.50) < 0.02){
 	      hM2D->Fill(vL2D(b_meson_x[m], b_meson_y[m]));
 	      hMx->Fill(b_meson_pt[m]/b_Jet_pt[qj]);
 	      hMj->Fill(dr);
@@ -275,10 +275,10 @@ int main(int argc, char* argv[])
 	}
 	else{
 	  nBM += 1;
-	  hM->Fill(b_meson_M[m]);
+	  hM->Fill(b_meson_mass[m]);
 	  if(fabs(b_meson_chi2[m]) < 1.0 && b_meson_dca[m] < 0.2 && b_meson_lxy[m] > 0.25 && b_meson_angleXY[m] > 0){
-            hMc->Fill(b_meson_M[m]);
-            if(fabs(b_meson_M[m] - 0.50) < 0.02){
+            hMc->Fill(b_meson_mass[m]);
+            if(fabs(b_meson_mass[m] - 0.50) < 0.02){
               hM2D->Fill(vL2D(b_meson_x[m], b_meson_y[m]));
               hMx->Fill(b_meson_pt[m]/b_Jet_pt[qj]);
               hMj->Fill(dr);
@@ -291,10 +291,10 @@ int main(int argc, char* argv[])
         if(isS){
           nSM += 1;
           match.push_back(m);
-          hM->Fill(b_meson_M[m]);
+          hM->Fill(b_meson_mass[m]);
           if(fabs(b_meson_chi2[m]) < 1.0 && b_meson_dca[m] < 0.2 && b_meson_lxy[m] > 0.25 && b_meson_angleXY[m] > 0){
-            hMc->Fill(b_meson_M[m]);
-            if(fabs(b_meson_M[m] - 0.50) < 0.02){
+            hMc->Fill(b_meson_mass[m]);
+            if(fabs(b_meson_mass[m] - 0.50) < 0.02){
               hM2D->Fill(vL2D(b_meson_x[m], b_meson_y[m]));
 	      hM3D->Fill(vL3D(b_meson_x[m], b_meson_y[m], b_meson_z[m]));
               hMx->Fill(b_meson_pt[m]/b_Jet_pt[qbj]);
@@ -304,10 +304,10 @@ int main(int argc, char* argv[])
         }
         else{
           nBM += 1;
-          hM->Fill(b_meson_M[m]);
+          hM->Fill(b_meson_mass[m]);
           if(fabs(b_meson_chi2[m]) < 1.0 && b_meson_dca[m] < 0.2 && b_meson_lxy[m] > 0.25 && b_meson_angleXY[m] > 0){
-            hMc->Fill(b_meson_M[m]);
-            if(fabs(b_meson_M[m] - 0.50) < 0.02){
+            hMc->Fill(b_meson_mass[m]);
+            if(fabs(b_meson_mass[m] - 0.50) < 0.02){
               hM2D->Fill(vL2D(b_meson_x[m], b_meson_y[m]));
               hM3D->Fill(vL3D(b_meson_x[m], b_meson_y[m], b_meson_z[m]));
               hMx->Fill(b_meson_pt[m]/b_Jet_pt[qbj]);
@@ -318,18 +318,19 @@ int main(int argc, char* argv[])
       }
 
     }
-    for (auto c=0; c<nCMeson; ++c){
+    for (auto c=0; c<b_ncmeson; ++c){
       if(b_cmeson_angleXY[c] < 0) continue;
       if(b_cmeson_pdgId[c] == 310){
         auto dr = DeltaR(b_cmeson_eta[c] - b_Jet_eta[qj], DeltaPhi(b_cmeson_phi[c],b_Jet_phi[qj]));
         auto drb = DeltaR(b_cmeson_eta[c] - b_Jet_eta[qbj], DeltaPhi(b_cmeson_phi[c],b_Jet_phi[qbj]));
         if(dr < 0.3){
           if((b_cmeson_pt[c]/b_Jet_pt[qj]) < 0.15) continue;
-          hC->Fill(b_cmeson_M[c]);
+          hC->Fill(b_cmeson_mass[c]);
           if(fabs(b_cmeson_chi2[c]) < 1.0 && b_cmeson_dca[c] < 0.2 && b_cmeson_lxy[c] > 0.25 && b_cmeson_angleXY[c] > 0){
-            hCc->Fill(b_cmeson_M[c]);
-            if(fabs(b_cmeson_M[c] - 0.50) < 0.02){
+            hCc->Fill(b_cmeson_mass[c]);
+            if(fabs(b_cmeson_mass[c] - 0.50) < 0.02){
               hC2D->Fill(vL2D(b_cmeson_x[c], b_cmeson_y[c]));
+              hC3D->Fill(vL3D(b_cmeson_x[c], b_cmeson_y[c], b_cmeson_z[c]));
               hCx->Fill(b_cmeson_pt[c]/b_Jet_pt[qj]);
               hCj->Fill(dr);
             }
@@ -337,10 +338,10 @@ int main(int argc, char* argv[])
         }
         else if(drb < 0.3){
           if((b_cmeson_pt[c]/b_Jet_pt[qbj]) < 0.15) continue;
-          hC->Fill(b_cmeson_M[c]);
+          hC->Fill(b_cmeson_mass[c]);
           if(fabs(b_cmeson_chi2[c]) < 1.0 && b_cmeson_dca[c] < 0.2 && b_cmeson_lxy[c] > 0.25 && b_cmeson_angleXY[c] > 0){
-            hCc->Fill(b_cmeson_M[c]);
-            if(fabs(b_cmeson_M[c] - 0.50) < 0.02){
+            hCc->Fill(b_cmeson_mass[c]);
+            if(fabs(b_cmeson_mass[c] - 0.50) < 0.02){
               hC2D->Fill(vL2D(b_cmeson_x[c], b_cmeson_y[c]));
               hC3D->Fill(vL3D(b_cmeson_x[c], b_cmeson_y[c], b_cmeson_z[c]));
               hCx->Fill(b_cmeson_pt[c]/b_Jet_pt[qbj]);
