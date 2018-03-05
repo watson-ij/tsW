@@ -1,6 +1,8 @@
 # Use singularity image to run make, i.e.
 # singularity ~/Images/Madgraph.img make run_tsW_dilep
 
+wj_jetAnalyser_cms : wj_jetAnalyser_cms.cxx
+	g++ -g -std=c++1y -o wj_jetAnalyser_cms wj_jetAnalyser_cms.cxx -L/code/MG5_aMC_v2_6_0/Delphes/ -I../../install/include `root-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/Delphes/ -I/code/MG5_aMC_v2_6_0/Delphes/external -lEG -lDelphes
 
 wj_jetAnalyser : wj_jetAnalyser.cxx
 	g++ -g -std=c++1y -o wj_jetAnalyser wj_jetAnalyser.cxx -L/code/MG5_aMC_v2_6_0/Delphes/ -I../../install/include `root-config --cflags --libs` -I/code/MG5_aMC_v2_6_0/Delphes/ -I/code/MG5_aMC_v2_6_0/Delphes/external -lEG -lDelphes
@@ -17,13 +19,13 @@ pythia_tqW : pythia_tqW.cc
 	g++ pythia_tqW.cc -std=c++11 -o pythia_tqW  -I/code/MG5_aMC_v2_6_0/HEPTools/hepmc/include  -I/code/MG5_aMC_v2_6_0/HEPTools/pythia8//include -L/code/MG5_aMC_v2_6_0/HEPTools/pythia8//lib -lpythia8 -L/usr/lib -lboost_iostreams -L/code/MG5_aMC_v2_6_0/HEPTools/zlib/lib -lz -L/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib -lHepMC -ldl
 
 run_s : pythia_tqW
-	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -s -n 50 s.hepmc
+	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -s -n 100000 s.hepmc
 	/code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC delphes_card_CMS.tcl s.root s.hepmc
 run_b : pythia_tqW
-	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -b -n 50 b.hepmc
+	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -b -n 100000 b.hepmc
 	/code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC delphes_card_CMS.tcl b.root b.hepmc
 run_h : pythia_tqW
-	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -h -n 50 h.hepmc
+	LD_LIBRARY_PATH=/code/MG5_aMC_v2_6_0/HEPTools/hepmc/lib:$LD_LIBRARY_PATH ./pythia_tqW -h -n 20000 h.hepmc
 	/code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC delphes_card_CMS.tcl h.root h.hepmc
 
 pythia_tsW : pythia_tsW.cc

@@ -39,6 +39,8 @@ std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool mot
 std::vector<Double_t> cross3D(std::vector<Double_t> & a, std::vector<Double_t> & b);
 Double_t DeltaPhi(Double_t phi1, Double_t phi2);
 Double_t DeltaR(Double_t deta, Double_t dphi);
+Float_t vL2D(Float_t, Float_t);
+Float_t vL3D(Float_t, Float_t, Float_t);
 
 //define functions
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p){
@@ -86,3 +88,11 @@ Double_t DeltaR(Double_t deta, Double_t dphi) {
   return TMath::Sqrt(deta*deta + dphi*dphi);
 }
 
+//for cmssw data
+Float_t vL2D(Float_t KS_x, Float_t KS_y) {
+  return sqrt(KS_x*KS_x + KS_y*KS_y);
+}
+
+Float_t vL3D(Float_t KS_x, Float_t KS_y, Float_t KS_z) {
+  return sqrt(KS_x*KS_x + KS_y*KS_y + KS_z*KS_z);
+}
