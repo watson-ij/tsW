@@ -14,6 +14,12 @@
 #include "classes/DelphesClasses.h"
 #include "wj_jetAnalyser.h"
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// select define for getting output about Gen or Reco
+//#define Gen
+#define Reco
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int main(int argc, char* argv[])
 {
 
@@ -32,11 +38,30 @@ int main(int argc, char* argv[])
   Int_t b_GenPart_pdgId[10000];
   Float_t b_GenPart_eta[10000];
   Float_t b_GenPart_phi[10000];
+  Float_t b_GenPart_pt[10000];
+
+  UInt_t b_nV0GenPart;
+  Int_t b_V0GenPart_pdgId[10000];
+  Float_t b_V0GenPart_eta[10000];
+  Float_t b_V0GenPart_phi[10000];
+  Float_t b_V0GenPart_pt[10000];
 
   UInt_t b_nJet;
   Float_t b_Jet_eta[10000];
   Float_t b_Jet_phi[10000];
   Float_t b_Jet_pt[10000];
+
+  UInt_t b_nGenJet;
+  Int_t b_GenJet_partonFlavour[10000];
+  Float_t b_GenJet_eta[10000];
+  Float_t b_GenJet_phi[10000];
+  Float_t b_GenJet_pt[10000];
+
+  UInt_t b_nGenJetAK8;
+  Int_t b_GenJetAK8_partonFlavour[10000];
+  Float_t b_GenJetAK8_eta[10000];
+  Float_t b_GenJetAK8_phi[10000];
+  Float_t b_GenJetAK8_pt[10000];
 
   UInt_t b_nKshort;
   Float_t b_Kshort_x[10000];
@@ -75,18 +100,40 @@ int main(int argc, char* argv[])
   Float_t b_cmeson_lxy[10000];
   Float_t b_cmeson_angleXY[10000];
 
-//  trees->SetBranchStatus("*", true);
+  //GenPart
   trees->SetBranchAddress("nGenPart",&b_nGenPart);
   trees->SetBranchAddress("GenPart_status",b_GenPart_status);
   trees->SetBranchAddress("GenPart_pdgId",b_GenPart_pdgId);
   trees->SetBranchAddress("GenPart_eta", b_GenPart_eta);
   trees->SetBranchAddress("GenPart_phi", b_GenPart_phi);
+  trees->SetBranchAddress("GenPart_pt", b_GenPart_pt);
 
+  trees->SetBranchAddress("nV0GenPart",&b_nV0GenPart);
+  trees->SetBranchAddress("V0GenPart_pdgId",b_V0GenPart_pdgId);
+  trees->SetBranchAddress("V0GenPart_eta", b_V0GenPart_eta);
+  trees->SetBranchAddress("V0GenPart_phi", b_V0GenPart_phi);
+  trees->SetBranchAddress("V0GenPart_pt", b_V0GenPart_pt);
+
+
+  //Reco & Gen jet
   trees->SetBranchAddress("nJet", &b_nJet);
   trees->SetBranchAddress("Jet_eta", b_Jet_eta);
   trees->SetBranchAddress("Jet_phi", b_Jet_phi);
   trees->SetBranchAddress("Jet_pt", b_Jet_pt);
 
+  trees->SetBranchAddress("nGenJet", &b_nGenJet);
+  trees->SetBranchAddress("GenJet_partonFlavour", b_GenJet_partonFlavour);
+  trees->SetBranchAddress("GenJet_eta", b_GenJet_eta);
+  trees->SetBranchAddress("GenJet_phi", b_GenJet_phi);
+  trees->SetBranchAddress("GenJet_pt", b_GenJet_pt);
+
+  trees->SetBranchAddress("nGenJetAK8", &b_nGenJetAK8);
+  trees->SetBranchAddress("GenJetAK8_partonFlavour", b_GenJetAK8_partonFlavour);
+  trees->SetBranchAddress("GenJetAK8_eta", b_GenJetAK8_eta);
+  trees->SetBranchAddress("GenJetAK8_phi", b_GenJetAK8_phi);
+  trees->SetBranchAddress("GenJetAK8_pt", b_GenJetAK8_pt);
+
+  //Meson from several producer
   trees->SetBranchAddress("nKshort", &b_nKshort);
   trees->SetBranchAddress("Kshort_eta", b_Kshort_eta);
   trees->SetBranchAddress("Kshort_phi", b_Kshort_phi);
@@ -163,6 +210,17 @@ int main(int argc, char* argv[])
   TH1F * hCj = new TH1F("Cj", "C Meson collection;j;", 50, 0., 1.); hList.push_back(hCj);
   TH1F * hVj = new TH1F("Vj", "V0Meson collection;j;", 50, 0., 1.); hList.push_back(hVj);
   TH1F * hMj = new TH1F("Mj", "Meson collection;j;", 50, 0., 1.); hList.push_back(hMj);
+////
+  TH1F * hMCs = new TH1F("MCs" , "gen s-quark & gen s-jet matching check", 3, 0,2); hList.push_back(hMCs);
+  TH1F * hMCb = new TH1F("MCb" , "gen b-quark & gen b-jet matching check", 3, 0,2); hList.push_back(hMCb);
+  //TH1F * hMCsAK8 = new TH1F("MCsAK8" , "gen s-quark & gen s-jet(AK8) matching check", 3, 0,2); hList.push_back(hMCsAK8);
+  //TH1F * hMCbAK8 = new TH1F("MCbAK8" , "gen b-quark & gen b-jet(AK8) matching check", 3, 0,2); hList.push_back(hMCbAK8);
+
+  TH1F * hGx = new TH1F("Gx", "x_KS as Gen KS vs Gen Jet", 100, 0, 1); hList.push_back(hGx);
+  TH1F * hGSx = new TH1F("GSx", "x_KS as Gen KS vs Gen S Jet", 100, 0, 1); hList.push_back(hGSx);
+  TH1F * hGBx = new TH1F("GBx", "x_KS as Gen KS vs Gen B Jet", 100, 0, 1); hList.push_back(hGBx);
+
+  TH1F * hRx = new TH1F("Rx", "x_KS as Reco KS vs Reco Jet", 100, 0, 1); hList.push_back(hRx);
 
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
@@ -173,9 +231,10 @@ int main(int argc, char* argv[])
     int q = -1;
     int qb = -1;
     bool isS = false;
+    //Find s/b quark from Gen Info.
     for(auto i=0; i<b_nGenPart; ++i){
       if (std::abs(b_GenPart_status[i] - 25) < 5 && b_GenPart_pdgId[i] == 3) {
-	q = i; 
+	q = i;
 	nS += 1; 
 	isS = true;
       }
@@ -193,6 +252,105 @@ int main(int argc, char* argv[])
       }
     }
     if (q == -1 ) continue;
+#ifdef Gen
+    //Gen Particle & Gen Jet matching check
+    int qgjS = -1;
+    int qbgjS = -1;
+    int qgjB = -1;
+    int qbgjB = -1;
+    int qgj = -1;
+    int qbgj = -1;
+    for(auto j=0; j<b_nGenJet; ++j){
+      auto dr = DeltaR(b_GenJet_eta[j] - b_GenPart_eta[q], DeltaPhi(b_GenJet_phi[j], b_GenPart_phi[q]));
+      auto drb = DeltaR(b_GenJet_eta[j] - b_GenPart_eta[qb], DeltaPhi(b_GenJet_phi[j], b_GenPart_phi[qb]));
+      bool isMat = false;
+      if(b_GenJet_partonFlavour[j] == 3) {
+        if(dr < 0.5) {
+	  isMat = true;
+	  hMCs->Fill(isMat);
+	  qgjS = j;
+	  qgj = j;
+	}
+      }
+      if(b_GenJet_partonFlavour[j] == -3) {
+        if(drb < 0.5) {
+          isMat = true;
+          hMCs->Fill(isMat);
+          qbgjS = j;
+          qbgj = j;
+        }
+      }
+      if(b_GenJet_partonFlavour[j] == 5) {
+        if(dr < 0.5) {
+          isMat = true;
+          hMCb->Fill(isMat);
+          qgjB = j;
+          qgj = j;
+        }
+      }
+      if(b_GenJet_partonFlavour[j] == -5) {
+        if(drb < 0.5) {
+          isMat = true;
+          hMCs->Fill(isMat);
+          qbgjB = j;
+          qbgj = j;
+        }
+      }
+    }
+    if(qgj == -1 || qbgj == -1) continue;
+    int sKS = -1;
+    int bKS = -1;
+    std::vector<int> genKsInJet;
+    std::vector<int> genKsInS;
+    std::vector<int> genKsInB;
+    //Find KS in jets
+    for(auto i=0; i<b_nV0GenPart; ++i){
+      if(abs(b_V0GenPart_pdgId[i]) != 310) continue;
+      auto drSKS = DeltaR(b_GenJet_eta[qgjS] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qgjS], b_V0GenPart_phi[i]));
+      auto drbSKS = DeltaR(b_GenJet_eta[qbgjS] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qbgjS], b_V0GenPart_phi[i]));
+      auto drBKS = DeltaR(b_GenJet_eta[qgjB] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qgjB], b_V0GenPart_phi[i]));
+      auto drbBKS = DeltaR(b_GenJet_eta[qbgjB] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qbgjB], b_V0GenPart_phi[i]));
+
+      if(drSKS < 0.3 && qgjS != -1) {
+        if(b_V0GenPart_pt[i]/b_GenJet_pt[qgjS] >= 0.15){
+          genKsInJet.push_back(i);
+          sKS = i;
+          genKsInS.push_back(sKS);
+          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjS]);
+	  hGSx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjS]);
+        }
+      }
+      if(drbSKS < 0.3 && qbgjS != -1) {
+        if(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjS] >= 0.15){
+          genKsInJet.push_back(i);
+          sKS = i;
+          genKsInS.push_back(sKS);
+          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjS]);
+          hGSx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjS]);
+        }
+      }
+      if(drBKS < 0.3 && qgjB != -1) {
+        if(b_V0GenPart_pt[i]/b_GenJet_pt[qgjB] >= 0.15){
+          genKsInJet.push_back(i);
+          bKS = i;
+          genKsInB.push_back(bKS);
+          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjB]);
+          hGBx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjB]);
+        }
+      }
+      if(drbBKS < 0.3 && qbgjB != -1) {
+        if(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjB] >= 0.15){
+          genKsInJet.push_back(i);
+          bKS = i;
+          genKsInB.push_back(bKS);
+          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjB]);
+          hGBx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjB]);
+        }
+      }
+    }
+#endif
+
+#ifdef Reco
     int qj = -1;
     int qbj = -1;
     for(auto j=0; j<b_nJet;++j){
@@ -200,10 +358,9 @@ int main(int argc, char* argv[])
       else if(DeltaR(b_Jet_eta[j] - b_GenPart_eta[qb], DeltaPhi(b_Jet_phi[j], b_GenPart_phi[qb])) < 0.5) qbj = j;
     }
     if (qj == -1 || qbj == -1) continue; 
-    //nSB
+
     std::vector<int> match;
-    //auto vL2D = sqrt(b_Kshort_x*b_Kshort_x + b_Kshort_y*b_Kshort_y);
-    //auto vL3D = sqrt(b_Kshort_x*b_Kshort_x + b_Kshort_y*b_Kshort_y + b_Kshort_z*b_Kshort_z);
+    //KS from V0Producer
     for(auto k=0; k<b_nKshort; ++k){
       auto dr = DeltaR(b_Kshort_eta[k] - b_Jet_eta[qj], DeltaPhi(b_Kshort_phi[k],b_Jet_phi[qj]));
       auto drb = DeltaR(b_Kshort_eta[k] - b_Jet_eta[qbj], DeltaPhi(b_Kshort_phi[k],b_Jet_phi[qbj]));
@@ -254,6 +411,8 @@ int main(int argc, char* argv[])
 	}
       }
     }
+
+    // KS from MesonProducer
     for (auto m=0; m<b_nmeson; ++m){
       if(b_meson_pdgId[m] != 310) continue;
       auto dr = DeltaR(b_meson_eta[m] - b_Jet_eta[qj], DeltaPhi(b_meson_phi[m],b_Jet_phi[qj]));
@@ -316,8 +475,9 @@ int main(int argc, char* argv[])
           }
         }
       }
-
     }
+
+    // KS from CMesonProducer
     for (auto c=0; c<b_ncmeson; ++c){
       if(b_cmeson_angleXY[c] < 0) continue;
       if(b_cmeson_pdgId[c] == 310){
@@ -351,6 +511,7 @@ int main(int argc, char* argv[])
         }
       }
     } 
+#endif  
   }  
 
   tfiles->Close();
