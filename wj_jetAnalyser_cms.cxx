@@ -15,9 +15,10 @@
 #include "wj_jetAnalyser.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// select define for getting output about Gen or Reco
-//#define Gen
-#define Reco
+// select define for getting output about EvnetSelection / Gen or Reco
+#define evSel
+#define Gen
+//#define Reco
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char* argv[])
@@ -34,71 +35,104 @@ int main(int argc, char* argv[])
   auto trees = (TTree*) tfiles->Get("Events");
 
   UInt_t b_nGenPart;
-  Int_t b_GenPart_status[10000];
-  Int_t b_GenPart_pdgId[10000];
-  Float_t b_GenPart_eta[10000];
-  Float_t b_GenPart_phi[10000];
-  Float_t b_GenPart_pt[10000];
+  Int_t b_GenPart_status[1000];
+  Int_t b_GenPart_pdgId[1000];
+  Float_t b_GenPart_eta[1000];
+  Float_t b_GenPart_phi[1000];
+  Float_t b_GenPart_pt[1000];
 
   UInt_t b_nV0GenPart;
-  Int_t b_V0GenPart_pdgId[10000];
-  Float_t b_V0GenPart_eta[10000];
-  Float_t b_V0GenPart_phi[10000];
-  Float_t b_V0GenPart_pt[10000];
+  Int_t b_V0GenPart_pdgId[1000];
+  Float_t b_V0GenPart_eta[1000];
+  Float_t b_V0GenPart_phi[1000];
+  Float_t b_V0GenPart_pt[1000];
+  Float_t b_V0GenPart_mass[1000];
 
   UInt_t b_nJet;
-  Float_t b_Jet_eta[10000];
-  Float_t b_Jet_phi[10000];
-  Float_t b_Jet_pt[10000];
+  Int_t b_Jet_partonFlavour[1000];
+  Int_t b_Jet_jetId[1000];
+  Float_t b_Jet_eta[1000];
+  Float_t b_Jet_phi[1000];
+  Float_t b_Jet_pt[1000];
+  Float_t b_Jet_mass[1000];
 
   UInt_t b_nGenJet;
-  Int_t b_GenJet_partonFlavour[10000];
-  Float_t b_GenJet_eta[10000];
-  Float_t b_GenJet_phi[10000];
-  Float_t b_GenJet_pt[10000];
+  Int_t b_GenJet_partonFlavour[1000];
+  Float_t b_GenJet_eta[1000];
+  Float_t b_GenJet_phi[1000];
+  Float_t b_GenJet_pt[1000];
+  Float_t b_GenJet_mass[1000];
 
   UInt_t b_nGenJetAK8;
-  Int_t b_GenJetAK8_partonFlavour[10000];
-  Float_t b_GenJetAK8_eta[10000];
-  Float_t b_GenJetAK8_phi[10000];
-  Float_t b_GenJetAK8_pt[10000];
+  Int_t b_GenJetAK8_partonFlavour[1000];
+  Float_t b_GenJetAK8_eta[1000];
+  Float_t b_GenJetAK8_phi[1000];
+  Float_t b_GenJetAK8_pt[1000];
 
   UInt_t b_nKshort;
-  Float_t b_Kshort_x[10000];
-  Float_t b_Kshort_y[10000];
-  Float_t b_Kshort_z[10000];
-  Float_t b_Kshort_eta[10000];
-  Float_t b_Kshort_phi[10000];
-  Float_t b_Kshort_pt[10000];
-  Float_t b_Kshort_mass[10000];
+  Float_t b_Kshort_x[1000];
+  Float_t b_Kshort_y[1000];
+  Float_t b_Kshort_z[1000];
+  Float_t b_Kshort_eta[1000];
+  Float_t b_Kshort_phi[1000];
+  Float_t b_Kshort_pt[1000];
+  Float_t b_Kshort_mass[1000];
 
   UInt_t b_nmeson;
-  Int_t b_meson_pdgId[10000];
-  Float_t b_meson_x[10000];
-  Float_t b_meson_y[10000];
-  Float_t b_meson_z[10000];
-  Float_t b_meson_eta[10000];
-  Float_t b_meson_phi[10000];
-  Float_t b_meson_pt[10000];
-  Float_t b_meson_mass[10000];
-  Float_t b_meson_chi2[10000];
-  Float_t b_meson_dca[10000];
-  Float_t b_meson_lxy[10000];
-  Float_t b_meson_angleXY[10000];
+  Int_t b_meson_pdgId[1000];
+  Float_t b_meson_x[1000];
+  Float_t b_meson_y[1000];
+  Float_t b_meson_z[1000];
+  Float_t b_meson_eta[1000];
+  Float_t b_meson_phi[1000];
+  Float_t b_meson_pt[1000];
+  Float_t b_meson_mass[1000];
+  Float_t b_meson_chi2[1000];
+  Float_t b_meson_dca[1000];
+  Float_t b_meson_lxy[1000];
+  Float_t b_meson_angleXY[1000];
 
   UInt_t b_ncmeson;
-  Int_t b_cmeson_pdgId[10000];
-  Float_t b_cmeson_x[10000];
-  Float_t b_cmeson_y[10000];
-  Float_t b_cmeson_z[10000];
-  Float_t b_cmeson_eta[10000];
-  Float_t b_cmeson_phi[10000];
-  Float_t b_cmeson_pt[10000];
-  Float_t b_cmeson_mass[10000];
-  Float_t b_cmeson_chi2[10000];
-  Float_t b_cmeson_dca[10000];
-  Float_t b_cmeson_lxy[10000];
-  Float_t b_cmeson_angleXY[10000];
+  Int_t b_cmeson_pdgId[1000];
+  Float_t b_cmeson_x[1000];
+  Float_t b_cmeson_y[1000];
+  Float_t b_cmeson_z[1000];
+  Float_t b_cmeson_eta[1000];
+  Float_t b_cmeson_phi[1000];
+  Float_t b_cmeson_pt[1000];
+  Float_t b_cmeson_mass[1000];
+  Float_t b_cmeson_chi2[1000];
+  Float_t b_cmeson_dca[1000];
+  Float_t b_cmeson_lxy[1000];
+  Float_t b_cmeson_angleXY[1000];
+
+  Int_t b_PV_npvs;
+  Float_t b_PV_ndof;
+  Float_t b_PV_x;
+  Float_t b_PV_y;
+  Float_t b_PV_z;
+
+  Float_t b_MET_pt;
+
+  UInt_t b_nMuon;
+  Int_t b_Muon_pdgId[1000];
+  Int_t b_Muon_charge[1000];
+  Float_t b_Muon_pt[1000];
+  Float_t b_Muon_eta[1000];
+  Float_t b_Muon_phi[1000];
+  Float_t b_Muon_mass[1000];
+  Float_t b_Muon_pfRelIso04_all[1000];
+  Bool_t b_Muon_tightId[1000];
+
+  UInt_t b_nElectron;
+  Int_t b_Electron_pdgId[1000];
+  Int_t b_Electron_charge[1000];
+  Int_t b_Electron_cutBased[1000];
+  Float_t b_Electron_pt[1000];
+  Float_t b_Electron_eta[1000];
+  Float_t b_Electron_phi[1000];
+  Float_t b_Electron_mass[1000];
+  Float_t b_Electron_deltaEtaSC[1000];
 
   //GenPart
   trees->SetBranchAddress("nGenPart",&b_nGenPart);
@@ -113,19 +147,23 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("V0GenPart_eta", b_V0GenPart_eta);
   trees->SetBranchAddress("V0GenPart_phi", b_V0GenPart_phi);
   trees->SetBranchAddress("V0GenPart_pt", b_V0GenPart_pt);
-
+  trees->SetBranchAddress("V0GenPart_mass", b_V0GenPart_mass);
 
   //Reco & Gen jet
   trees->SetBranchAddress("nJet", &b_nJet);
+  trees->SetBranchAddress("Jet_partonFlavour", b_Jet_partonFlavour);
+  trees->SetBranchAddress("Jet_jetId", b_Jet_jetId);
   trees->SetBranchAddress("Jet_eta", b_Jet_eta);
   trees->SetBranchAddress("Jet_phi", b_Jet_phi);
   trees->SetBranchAddress("Jet_pt", b_Jet_pt);
+  trees->SetBranchAddress("Jet_mass", b_Jet_mass);
 
   trees->SetBranchAddress("nGenJet", &b_nGenJet);
   trees->SetBranchAddress("GenJet_partonFlavour", b_GenJet_partonFlavour);
   trees->SetBranchAddress("GenJet_eta", b_GenJet_eta);
   trees->SetBranchAddress("GenJet_phi", b_GenJet_phi);
   trees->SetBranchAddress("GenJet_pt", b_GenJet_pt);
+  trees->SetBranchAddress("GenJet_mass", b_GenJet_mass);
 
   trees->SetBranchAddress("nGenJetAK8", &b_nGenJetAK8);
   trees->SetBranchAddress("GenJetAK8_partonFlavour", b_GenJetAK8_partonFlavour);
@@ -171,24 +209,62 @@ int main(int argc, char* argv[])
   trees->SetBranchAddress("cmeson_lxy", b_cmeson_lxy);
   trees->SetBranchAddress("cmeson_angleXY", b_cmeson_angleXY);
 
+  //PV
+  trees->SetBranchAddress("PV_npvs", &b_PV_npvs);
+  trees->SetBranchAddress("PV_ndof", &b_PV_ndof);
+  trees->SetBranchAddress("PV_x", &b_PV_x);
+  trees->SetBranchAddress("PV_y", &b_PV_y);
+  trees->SetBranchAddress("PV_z", &b_PV_z);
+
+  //MET
+  trees->SetBranchAddress("MET_pt", &b_MET_pt);
+
+  //Leptons
+  trees->SetBranchAddress("nMuon", &b_nMuon);
+  trees->SetBranchAddress("Muon_pdgId", b_Muon_pdgId);
+  trees->SetBranchAddress("Muon_charge", b_Muon_charge);
+  trees->SetBranchAddress("Muon_pt", b_Muon_pt);
+  trees->SetBranchAddress("Muon_eta", b_Muon_eta);
+  trees->SetBranchAddress("Muon_phi", b_Muon_phi);
+  trees->SetBranchAddress("Muon_mass", b_Muon_mass);
+  trees->SetBranchAddress("Muon_pfRelIso04_all", b_Muon_pfRelIso04_all);
+  trees->SetBranchAddress("Muon_tightId", b_Muon_tightId);
+
+  trees->SetBranchAddress("nElectron", &b_nElectron);
+  trees->SetBranchAddress("Electron_pdgId", b_Electron_pdgId);
+  trees->SetBranchAddress("Electron_charge", b_Electron_charge);
+  trees->SetBranchAddress("Electron_cutBased", b_Electron_cutBased);
+  trees->SetBranchAddress("Electron_pt", b_Electron_pt);
+  trees->SetBranchAddress("Electron_eta", b_Electron_eta);
+  trees->SetBranchAddress("Electron_phi", b_Electron_phi);
+  trees->SetBranchAddress("Electron_mass", b_Electron_mass);
+  trees->SetBranchAddress("Electron_deltaEtaSC", b_Electron_deltaEtaSC);
+
   //make output file
   auto out = TFile::Open(outf.c_str(), "RECREATE");
   auto outtr = new TTree("tsw", "tsw");
 
   //make Branches
-
-  //make Histograms
-  TString cutflow_title = "cutflow" + inf;
-  TH1F * cutflow = new TH1F("cutflow", cutflow_title, 7,-1,6); // -1 : all events, 0 : events after lepton selection, 1~ : events after step
-
   // global parameters
   int nS = 0; int nSM = 0;
   int nB = 0; int nBM = 0;
 
-  //nSB 
-  //nVC
-
+  //make Histograms
   std::vector<TH1F*> hList;
+  TString cutflow_title = "cutflow" + inf;
+  TH1F * cutflow = new TH1F("cutflow", cutflow_title, 10,-2,8); // -2 : all events, -1 : PV cut, 0 : events after lepton selection, 1~5 : events after step, 6 : events after quark selection, 7 : events after quark-jet matching
+  hList.push_back(cutflow);
+
+  TH1F * hDLCH = new TH1F("dilepCh", "dilepton channel after event selection", 10, 20, 30);hList.push_back(hDLCH);
+
+  TH1F * hKSn = new TH1F("KSn", "number of KS in gen jet", 100, 0, 10);hList.push_back(hKSn);
+  TH1F * hKSnS = new TH1F("KSnS", "number of KS in gen s jet", 100, 0, 10);hList.push_back(hKSnS);
+  TH1F * hKSnB = new TH1F("KSnB", "number of KS in gen b jet", 100, 0, 10);hList.push_back(hKSnB);
+
+  TH1F * hLn = new TH1F("Ln", "number of Lamb in gen jet", 100, 0, 10);hList.push_back(hLn);
+  TH1F * hLnS = new TH1F("LnS", "number of Lamb in gen s jet", 100, 0, 10);hList.push_back(hLnS);
+  TH1F * hLnB = new TH1F("LnB", "number of Lamb in gen b jet", 100, 0, 10);hList.push_back(hLnB);
+
   TH1F * hC = new TH1F("C", "C Meson collection;Mass [GeV];", 50, 0.43, 0.57); hList.push_back(hC);
   TH1F * hCc = new TH1F("Cc", "C Meson collection;Mass [GeV];", 50, 0.43, 0.57); hList.push_back(hCc);
   TH1F * hV = new TH1F("V", "V0Meson collection;Mass [GeV];", 50, 0.43, 0.57); hList.push_back(hV);
@@ -203,29 +279,133 @@ int main(int argc, char* argv[])
   TH1F * hV3D = new TH1F("V3D", "V0Meson collection;Decay Length 3D [cm];", 50, 0., 25); hList.push_back(hV3D);
   TH1F * hM3D = new TH1F("M3D", "Meson collection;Decay Length 3D [cm];", 50, 0., 25); hList.push_back(hM3D);
 
-  TH1F * hCx = new TH1F("Cx", "C Meson collection;x;", 50, 0., 1.); hList.push_back(hCx);
-  TH1F * hVx = new TH1F("Vx", "V0Meson collection;x;", 50, 0., 1.); hList.push_back(hVx);
-  TH1F * hMx = new TH1F("Mx", "Meson collection;x;", 50, 0., 1.); hList.push_back(hMx);
+  TH1F * hCx = new TH1F("Cx", "C Meson collection;x;", 100, 0., 1.); hList.push_back(hCx);
+  TH1F * hVx = new TH1F("Vx", "V0Meson collection;x;", 100, 0., 1.); hList.push_back(hVx);
+  TH1F * hMx = new TH1F("Mx", "Meson collection;x;", 100, 0., 1.); hList.push_back(hMx);
 
-  TH1F * hCj = new TH1F("Cj", "C Meson collection;j;", 50, 0., 1.); hList.push_back(hCj);
-  TH1F * hVj = new TH1F("Vj", "V0Meson collection;j;", 50, 0., 1.); hList.push_back(hVj);
-  TH1F * hMj = new TH1F("Mj", "Meson collection;j;", 50, 0., 1.); hList.push_back(hMj);
+  TH1F * hCj = new TH1F("Cj", "C Meson collection;j;", 100, 0., 1.); hList.push_back(hCj);
+  TH1F * hVj = new TH1F("Vj", "V0Meson collection;j;", 100, 0., 1.); hList.push_back(hVj);
+  TH1F * hMj = new TH1F("Mj", "Meson collection;j;", 100, 0., 1.); hList.push_back(hMj);
 ////
   TH1F * hMCs = new TH1F("MCs" , "gen s-quark & gen s-jet matching check", 3, 0,2); hList.push_back(hMCs);
   TH1F * hMCb = new TH1F("MCb" , "gen b-quark & gen b-jet matching check", 3, 0,2); hList.push_back(hMCb);
-  //TH1F * hMCsAK8 = new TH1F("MCsAK8" , "gen s-quark & gen s-jet(AK8) matching check", 3, 0,2); hList.push_back(hMCsAK8);
-  //TH1F * hMCbAK8 = new TH1F("MCbAK8" , "gen b-quark & gen b-jet(AK8) matching check", 3, 0,2); hList.push_back(hMCbAK8);
 
-  TH1F * hGx = new TH1F("Gx", "x_KS as Gen KS vs Gen Jet", 100, 0, 1); hList.push_back(hGx);
-  TH1F * hGSx = new TH1F("GSx", "x_KS as Gen KS vs Gen S Jet", 100, 0, 1); hList.push_back(hGSx);
-  TH1F * hGBx = new TH1F("GBx", "x_KS as Gen KS vs Gen B Jet", 100, 0, 1); hList.push_back(hGBx);
+  TH1F * hGx = new TH1F("Gx", "Gen KS collection;x", 100, 0, 1); hList.push_back(hGx);
+  TH1F * hGSx = new TH1F("GSx", "Gen KS collection from S;x", 100, 0, 1); hList.push_back(hGSx);
+  TH1F * hGBx = new TH1F("GBx", "Gen KS collection from B;x", 100, 0, 1); hList.push_back(hGBx);
 
-  TH1F * hRx = new TH1F("Rx", "x_KS as Reco KS vs Reco Jet", 100, 0, 1); hList.push_back(hRx);
+  TH1F * hGj = new TH1F("Gj", "Gen KS collection;j", 100, 0, 1); hList.push_back(hGj);
+  TH1F * hGSj = new TH1F("GSj", "Gen KS collection from S;j", 100, 0, 1); hList.push_back(hGSj);
+  TH1F * hGBj = new TH1F("GBj", "Gen KS collection from B;j", 100, 0, 1); hList.push_back(hGBj);
+
+  TH1F * hGd = new TH1F("Gd", "Gen KS collection;d", 1000, 0, 20); hList.push_back(hGd);
+  TH1F * hGSd = new TH1F("GSd", "Gen KS collection from S;d", 1000, 0, 20); hList.push_back(hGSd);
+  TH1F * hGBd = new TH1F("GBd", "Gen KS collection from B;d", 1000, 0, 20); hList.push_back(hGBd);
+  TH1F * hGdL = new TH1F("GdL", "Gen KS collection;log(d)", 1000, -10, 5); hList.push_back(hGdL);
+  TH1F * hGSdL = new TH1F("GSdL", "Gen KS collection from S;log(d)", 1000, -10, 5); hList.push_back(hGSdL);
+  TH1F * hGBdL = new TH1F("GBdL", "Gen KS collection from B;log(d)", 1000, -10, 5); hList.push_back(hGBdL);
+
+  TH1F * hLGx = new TH1F("LGx", "Gen Lamb collection;x", 100, 0, 1); hList.push_back(hGx);
+  TH1F * hLGSx = new TH1F("LGSx", "Gen Lamb collection from S;x", 100, 0, 1); hList.push_back(hGSx);
+  TH1F * hLGBx = new TH1F("LGBx", "Gen Lamb collection from B;x", 100, 0, 1); hList.push_back(hGBx);
+
+  TH1F * hLGj = new TH1F("LGj", "Gen Lamb collection;j", 100, 0, 1); hList.push_back(hLGj);
+  TH1F * hLGSj = new TH1F("LGSj", "Gen Lamb collection from S;j", 100, 0, 1); hList.push_back(hLGSj);
+  TH1F * hLGBj = new TH1F("LGBj", "Gen Lamb collection from B;j", 100, 0, 1); hList.push_back(hLGBj);
+
+  TH1F * hLGd = new TH1F("LGd", "Gen Lamb collection;d", 1000, 0, 20); hList.push_back(hLGd);
+  TH1F * hLGSd = new TH1F("LGSd", "Gen Lamb collection from S;d", 1000, 0, 20); hList.push_back(hLGSd);
+  TH1F * hLGBd = new TH1F("LGBd", "Gen Lamb collection from B;d", 1000, 0, 20); hList.push_back(hLGBd);
+  TH1F * hLGdL = new TH1F("LGdL", "Gen Lamb collection;log(d)", 1000, -10, 5); hList.push_back(hLGdL);
+  TH1F * hLGSdL = new TH1F("LGSdL", "Gen Lamb collection from S;log(d)", 1000, -10, 5); hList.push_back(hLGSdL);
+  TH1F * hLGBdL = new TH1F("LGBdL", "Gen Lamb collection from B;log(d)", 1000, -10, 5); hList.push_back(hLGBdL);
+
+
 
   //Event Loop Start!
   for (size_t iev = 0; iev < trees->GetEntries(); ++iev){
     if (iev%1000 == 0 ) std::cout << "event check    iev    ----> " << iev << std::endl;
     trees->GetEntry(iev);
+
+    cutflow->Fill(-2);
+#ifdef evSel
+    //Object selection
+    std::vector<struct Lepton> recolep;
+    for(auto i=0; i<b_nMuon; ++i){
+      if(!b_Muon_tightId[i]) continue;
+      if(b_Muon_pt[i] < 20) continue;
+      if(fabs(b_Muon_eta[i]) > 2.4) continue;
+      if(b_Muon_pfRelIso04_all[i] > 0.15) continue;
+
+      struct Lepton mu;
+      mu.tlv.SetPtEtaPhiM(b_Muon_pt[i], b_Muon_eta[i], b_Muon_phi[i], b_Muon_mass[i]);
+      mu.charge = b_Muon_charge[i];
+      mu.pdgid = b_Muon_pdgId[i];
+
+      recolep.push_back(mu);
+    }
+    for(auto i=0; i<b_nElectron; ++i){
+      if(b_Electron_pt[i] < 20) continue;
+      if(fabs(b_Electron_eta[i]) > 2.4) continue;
+      if(b_Electron_cutBased[i] < 3) continue;
+      float el_scEta = b_Electron_deltaEtaSC[i] + b_Electron_eta[i];
+      if(fabs(el_scEta) > 1.4442 && fabs(el_scEta) < 1.566) continue;
+
+      struct Lepton elec;
+      elec.tlv.SetPtEtaPhiM(b_Electron_pt[i], b_Electron_eta[i], b_Electron_phi[i], b_Electron_mass[i]);
+      elec.charge = b_Electron_charge[i];
+      elec.pdgid = b_Electron_pdgId[i];
+
+      recolep.push_back(elec);
+    }
+
+    if(fabs(b_PV_z) >= 24.) continue;
+    if(b_PV_npvs == 0 ) continue;
+    if(b_PV_ndof < 4) continue;
+
+    cutflow->Fill(-1);
+
+    if (recolep.size() < 2 ) continue;
+    //pick highest pt lepton pair
+    sort(recolep.begin(), recolep.end(), [](struct Lepton a, struct Lepton b){return a.tlv.Pt() > b.tlv.Pt();});
+    recolep.erase(recolep.begin()+2,recolep.end());
+
+    cutflow->Fill(0);
+
+    auto dilepton = recolep[0].tlv + recolep[1].tlv;
+    int dilepton_ch = abs(recolep[0].pdgid) + abs(recolep[1].pdgid); // 22 -> ee , 24 -> emu , 26 -> mumu
+
+    // step1
+    if(dilepton.M() < 20. || recolep[0].charge * recolep[1].charge > 0 ) continue;
+    cutflow->Fill(1);
+
+    // step2
+    if ( (dilepton_ch != 24) && ( dilepton.M() > 76. && dilepton.M() < 106.) ) continue;
+    cutflow->Fill(2);
+
+    // step3
+    if ( (dilepton_ch != 24) && (b_MET_pt < 40.) ) continue;
+    cutflow->Fill(3);
+
+    // step4
+    std::vector<int> selectedJets;
+    for(auto i=0; i<b_nJet; ++i){
+      if(b_Jet_pt[i] < 30) continue;
+      if(fabs(b_Jet_eta[i]) > 2.4) continue;
+      if(b_Jet_jetId[i] < 1) continue;
+      bool hasOverLap = false;
+      TLorentzVector jet;
+      jet.SetPtEtaPhiM(b_Jet_pt[i], b_Jet_eta[i], b_Jet_phi[i], b_Jet_mass[i]);
+      for (auto lep : recolep) { if (jet.DeltaR(lep.tlv) < 0.4) hasOverLap = true; }
+      if(hasOverLap) continue;
+      selectedJets.push_back(i);
+    }
+    if (selectedJets.size() < 2) continue;
+    cutflow->Fill(4);
+
+    hDLCH->Fill(dilepton_ch);
+#endif
+
     nS = 0;
     nB = 0;
     int q = -1;
@@ -252,12 +432,18 @@ int main(int argc, char* argv[])
       }
     }
     if (q == -1 ) continue;
+
+    cutflow->Fill(6);
+
 #ifdef Gen
     //Gen Particle & Gen Jet matching check
+    std::vector<int> genJet;
+
     int qgjS = -1;
     int qbgjS = -1;
     int qgjB = -1;
     int qbgjB = -1;
+
     int qgj = -1;
     int qbgj = -1;
     for(auto j=0; j<b_nGenJet; ++j){
@@ -298,56 +484,98 @@ int main(int argc, char* argv[])
       }
     }
     if(qgj == -1 || qbgj == -1) continue;
-    int sKS = -1;
-    int bKS = -1;
-    std::vector<int> genKsInJet;
-    std::vector<int> genKsInS;
-    std::vector<int> genKsInB;
-    //Find KS in jets
-    for(auto i=0; i<b_nV0GenPart; ++i){
-      if(abs(b_V0GenPart_pdgId[i]) != 310) continue;
-      auto drSKS = DeltaR(b_GenJet_eta[qgjS] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qgjS], b_V0GenPart_phi[i]));
-      auto drbSKS = DeltaR(b_GenJet_eta[qbgjS] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qbgjS], b_V0GenPart_phi[i]));
-      auto drBKS = DeltaR(b_GenJet_eta[qgjB] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qgjB], b_V0GenPart_phi[i]));
-      auto drbBKS = DeltaR(b_GenJet_eta[qbgjB] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[qbgjB], b_V0GenPart_phi[i]));
 
-      if(drSKS < 0.3 && qgjS != -1) {
-        if(b_V0GenPart_pt[i]/b_GenJet_pt[qgjS] >= 0.15){
-          genKsInJet.push_back(i);
-          sKS = i;
-          genKsInS.push_back(sKS);
-          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjS]);
-	  hGSx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjS]);
+    cutflow->Fill(7);
+
+    genJet.push_back(qgj);
+    genJet.push_back(qbgj);
+    for(auto gj : genJet){
+      std::vector<int> KsInJet;
+      std::vector<int> LambInJet;
+      //Find KS in GenJets
+      for(auto i=0; i <b_nV0GenPart;++i){
+        if(abs(b_V0GenPart_pdgId[i]) != 310) continue;
+        auto dr = DeltaR(b_GenJet_eta[gj] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[gj], b_V0GenPart_phi[i]));
+
+        TLorentzVector GenKS;
+        GenKS.SetPtEtaPhiM(b_V0GenPart_pt[i], b_V0GenPart_eta[i], b_V0GenPart_phi[i], b_V0GenPart_mass[i]);
+        std::vector<Double_t> PVtoKS = {GenKS.X() - b_PV_x, GenKS.Y() - b_PV_y, GenKS.Z() - b_PV_z};
+        auto magMomentum = sqrt(GenKS.Px()*GenKS.Px() + GenKS.Py()*GenKS.Py() + GenKS.Pz()*GenKS.Pz());
+        std::vector<Double_t> unitMomentum = { GenKS.Px()/magMomentum, GenKS.Py()/magMomentum, GenKS.Pz()/magMomentum };
+        std::vector<Double_t> Cross = cross3D(PVtoKS, unitMomentum);
+        auto d = sqrt(Cross[0]*Cross[0] + Cross[1]*Cross[1] + Cross[2]*Cross[2]);
+
+	if(dr < 0.3) {
+	  KsInJet.push_back(i);
+          if(b_V0GenPart_pt[i] / b_GenJet_pt[gj] < 0.15) continue;
+          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[gj]);
+          hGj->Fill(dr);
+          hGd->Fill(d);
+          hGdL->Fill(log(d));
+	  if(abs(b_GenJet_partonFlavour[gj]) == 3) {
+            hGSx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[gj]);
+            hGSj->Fill(dr);
+            hGSd->Fill(d);
+            hGSdL->Fill(log(d));
+	  }
+          if(abs(b_GenJet_partonFlavour[gj]) == 5) {
+            hGBx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[gj]);
+            hGBj->Fill(dr);
+            hGBd->Fill(d);
+            hGBdL->Fill(log(d));
+          }
+	}
+      }
+      hKSn->Fill(KsInJet.size());
+      if(abs(b_GenJet_partonFlavour[gj]) == 3) {
+	hKSnS->Fill(KsInJet.size());
+      }
+      if(abs(b_GenJet_partonFlavour[gj]) == 5) {
+	hKSnB->Fill(KsInJet.size());
+      }
+      // Find Lambda in GenJets
+      for(auto i=0; i <b_nV0GenPart;++i){
+        if(abs(b_V0GenPart_pdgId[i]) != 3122) continue;
+        auto dr = DeltaR(b_GenJet_eta[gj] - b_V0GenPart_eta[i], DeltaPhi(b_GenJet_phi[gj], b_V0GenPart_phi[i]));
+
+        TLorentzVector GenLamb;
+        GenLamb.SetPtEtaPhiM(b_V0GenPart_pt[i], b_V0GenPart_eta[i], b_V0GenPart_phi[i], b_V0GenPart_mass[i]);
+        std::vector<Double_t> PVtoLamb = {GenLamb.X() - b_PV_x, GenLamb.Y() - b_PV_y, GenLamb.Z() - b_PV_z};
+        auto magMomentum = sqrt(GenLamb.Px()*GenLamb.Px() + GenLamb.Py()*GenLamb.Py() + GenLamb.Pz()*GenLamb.Pz());
+        std::vector<Double_t> unitMomentum = { GenLamb.Px()/magMomentum, GenLamb.Py()/magMomentum, GenLamb.Pz()/magMomentum };
+        std::vector<Double_t> Cross = cross3D(PVtoLamb, unitMomentum);
+        auto d = sqrt(Cross[0]*Cross[0] + Cross[1]*Cross[1] + Cross[2]*Cross[2]);
+
+        if(dr < 0.3) {
+          LambInJet.push_back(i);
+          if(b_V0GenPart_pt[i] / b_GenJet_pt[gj] < 0.15) continue;
+          hLGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[gj]);
+          hLGj->Fill(dr);
+          hLGd->Fill(d);
+          hLGdL->Fill(log(d));
+          if(abs(b_GenJet_partonFlavour[gj]) == 3) {
+            hLGSx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[gj]);
+            hLGSj->Fill(dr);
+            hLGSd->Fill(d);
+            hLGSdL->Fill(log(d));
+          }
+          if(abs(b_GenJet_partonFlavour[gj]) == 5) {
+            hLGBx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[gj]);
+            hLGBj->Fill(dr);
+            hLGBd->Fill(d);
+            hLGBdL->Fill(log(d));
+          }
         }
       }
-      if(drbSKS < 0.3 && qbgjS != -1) {
-        if(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjS] >= 0.15){
-          genKsInJet.push_back(i);
-          sKS = i;
-          genKsInS.push_back(sKS);
-          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjS]);
-          hGSx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjS]);
-        }
+      hLn->Fill(LambInJet.size());
+      if(abs(b_GenJet_partonFlavour[gj]) == 3) {
+        hLnS->Fill(LambInJet.size());
       }
-      if(drBKS < 0.3 && qgjB != -1) {
-        if(b_V0GenPart_pt[i]/b_GenJet_pt[qgjB] >= 0.15){
-          genKsInJet.push_back(i);
-          bKS = i;
-          genKsInB.push_back(bKS);
-          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjB]);
-          hGBx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qgjB]);
-        }
-      }
-      if(drbBKS < 0.3 && qbgjB != -1) {
-        if(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjB] >= 0.15){
-          genKsInJet.push_back(i);
-          bKS = i;
-          genKsInB.push_back(bKS);
-          hGx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjB]);
-          hGBx->Fill(b_V0GenPart_pt[i]/b_GenJet_pt[qbgjB]);
-        }
+      if(abs(b_GenJet_partonFlavour[gj]) == 5) {
+        hLnB->Fill(LambInJet.size());
       }
     }
+
 #endif
 
 #ifdef Reco
@@ -358,6 +586,8 @@ int main(int argc, char* argv[])
       else if(DeltaR(b_Jet_eta[j] - b_GenPart_eta[qb], DeltaPhi(b_Jet_phi[j], b_GenPart_phi[qb])) < 0.5) qbj = j;
     }
     if (qj == -1 || qbj == -1) continue; 
+
+    cutflow->Fill(7);
 
     std::vector<int> match;
     //KS from V0Producer

@@ -36,6 +36,7 @@ struct Lepton toLepton(const GenParticle* p){ struct Lepton l; l.tlv = p->P4(); 
 const GenParticle* getLast(TClonesArray * particles, const GenParticle* p);
 std::vector<const GenParticle*> getMlist(TClonesArray * particles, const GenParticle* p);
 std::vector<float> collectHadron(std::vector<GenParticle> hadronsInjet, bool motherCheck);
+std::vector<Float_t> cross3D(std::vector<Float_t> & a, std::vector<Float_t> & b);
 std::vector<Double_t> cross3D(std::vector<Double_t> & a, std::vector<Double_t> & b);
 Double_t DeltaPhi(Double_t phi1, Double_t phi2);
 Double_t DeltaR(Double_t deta, Double_t dphi);
@@ -68,6 +69,11 @@ std::vector<const GenParticle*> getMlist(TClonesArray * particles, const GenPart
 
 std::vector<Double_t> cross3D(std::vector<Double_t> & a, std::vector<Double_t> & b){
   std::vector<Double_t> c = { a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0] };
+  return c;
+}
+
+std::vector<Float_t> cross3D(std::vector<Float_t> & a, std::vector<Float_t> & b){
+  std::vector<Float_t> c = { a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0] };
   return c;
 }
 
