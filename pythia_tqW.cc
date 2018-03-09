@@ -16,12 +16,13 @@ using Pythia8::Pythia;
 
 static bool doS = false;
 static bool doH = false;
+static bool doLam = false;
 static int nEvents = 1000;
 
 int main(int argc, char *argv[])
 {
   int c;
-  while ((c = getopt(argc, argv, "sbhn:")) != -1) {
+  while ((c = getopt(argc, argv, "sbhln:")) != -1) {
     switch (c) {
     case 's':
       doS = true;
@@ -31,6 +32,9 @@ int main(int argc, char *argv[])
       break;
     case 'h':
       doH = true;
+      break;
+    case 'l':
+      doLam = true;
       break;
     case 'n':
       nEvents = atoi(optarg);
@@ -42,7 +46,7 @@ int main(int argc, char *argv[])
   }
 
   if ((argc - optind) != 1) {
-    std::cout << "Requires output hepmc file argument. Optional -s flag for tt->sWsW generation, -b flag for tt->bWbW generation, -h flag for tt->bWsW" << std::endl;
+    std::cout << "Requires output hepmc file argument. Optional -s flag for tt->sWsW generation, -b flag for tt->bWbW generation, -h flag for tt->bWsW, -l flag for Lambda_b requirement" << std::endl;
     return 1;
   }
 
@@ -97,19 +101,30 @@ int main(int argc, char *argv[])
       pythia.next();
       HepMC::GenEvent* hepmcevt = new HepMC::GenEvent();
       ToHepMC.fill_next_event(pythia, hepmcevt);
-      if (doH) { // check bWsW topology
-	bool seenS = false, seenB = false;
+      if (doH || doL) { // check bWsW topology
+	bool seenS = false, seenB = false, seenL = false;
 	for (auto p = hepmcevt->particles_begin(); p != hepmcevt->particles_end(); ++p) {
 	  if (abs((*p)->status()) == 23 && abs((*p)->pdg_id()) == 3)
 	    seenS = true;
 	  if (abs((*p)->status()) == 23 && abs((*p)->pdg_id()) == 5)
 	    seenB = true;
+	  if (abs((*p)->pdg_id()) == 5122)
+	    seenB = true;
 	}
 
 	// discard events without an s and b
-	if (!seenS || !seenB) {
-	  delete hepmcevt;
-	  continue;
+	if (doH) {
+	  if (!seenS || !seenB) {
+	    delete hepmcevt;
+	    continue;
+	  }
+	} else if (doL) {
+	  if (!seenL) {
+	    delete hepmcevt;
+	    continue;
+	  }
+	} else {
+	  cout << "Unreachable" << endl;
 	}
       }
       ascii_io << hepmcevt;
