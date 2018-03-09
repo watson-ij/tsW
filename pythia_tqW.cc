@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   pythia.readString("Top:gg2ttbar = on");
   pythia.readString("Top:qqbar2ttbar = on");
 
-  pythia.readString("Main:numberOfEvents = 20000");
+  pythia.readString("Main:numberOfEvents = 500000");
 
   pythia.readString("Beams:idA = 2212");
   pythia.readString("Beams:idB = 2212");
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
       pythia.next();
       HepMC::GenEvent* hepmcevt = new HepMC::GenEvent();
       ToHepMC.fill_next_event(pythia, hepmcevt);
-      if (doH || doL) { // check bWsW topology
+      if (doH || doLam) { // check bWsW topology
 	bool seenS = false, seenB = false, seenL = false;
 	for (auto p = hepmcevt->particles_begin(); p != hepmcevt->particles_end(); ++p) {
 	  if (abs((*p)->status()) == 23 && abs((*p)->pdg_id()) == 3)
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 	  if (abs((*p)->status()) == 23 && abs((*p)->pdg_id()) == 5)
 	    seenB = true;
 	  if (abs((*p)->pdg_id()) == 5122)
-	    seenB = true;
+	    seenL = true;
 	}
 
 	// discard events without an s and b
@@ -118,13 +118,13 @@ int main(int argc, char *argv[])
 	    delete hepmcevt;
 	    continue;
 	  }
-	} else if (doL) {
+	} else if (doLam) {
 	  if (!seenL) {
 	    delete hepmcevt;
 	    continue;
 	  }
 	} else {
-	  cout << "Unreachable" << endl;
+	  std::cout << "Unreachable" << std::endl;
 	}
       }
       ascii_io << hepmcevt;
