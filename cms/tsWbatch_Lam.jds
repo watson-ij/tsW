@@ -1,0 +1,15 @@
+executable = batchLam.sh
+universe = vanilla
+output = log/runCMS-out.txt
+error = log/runCMS-error.txt
+log = log/runCMS-log.txt
+
+arguments = 2
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_output_files = result
+
+requirements = (Machine =!= "cms-gpu01.sdfarm.kr")
+
+queue

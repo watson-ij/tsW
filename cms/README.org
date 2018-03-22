@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 * Running the CMSSW generation on Batch
 
 The TTbar script used for generation can take an argument for 1 to
@@ -15,6 +16,23 @@ cmsRun step3_RAW2DIGI_L1Reco_RECO_RECOSIM_EI_PAT_VALIDATION_DQM.py
 cmsRun nanoAOD_NANO.py
 
 Use /cms/merge.py to hadd after batching
+
+* Running Madgraph with CMS gridpacks
+
+Go into a fresh directory
+
+```
+cp /cvmfs/cms.cern.ch/phys_generator/gridpacks/2017/13TeV/madgraph/V5_2.6.1/tt012j_5f_ckm_NLO_FXFX_VMG5_261_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz .
+tar xf tt012j_5f_ckm_NLO_FXFX_VMG5_261_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz
+./runcmsgrid.sh 1000 277 15 true > run.log 2>&1 # 1000=# of events to generate, 277=random seed, 15=# of cpus, true=setup gridpack CMS environment
+```
+
+For other gridpacks, try:
+
+```
+find /cvmfs/cms.cern.ch/phys_generator/gridpacks/ -name "tt012j*"
+cp /cvmfs/cms.cern.ch/phys_generator/gridpacks/slc6_amd64_gcc481/13TeV/madgraph/V5_2.4.2/tt012j_5f_ckm_NLO_FXFX/v5/tt012j_5f_ckm_NLO_FXFX_tarball.tar.xz .
+```
 
 * Running CMSSW production
 

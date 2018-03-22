@@ -9,6 +9,11 @@ f = TFile("result/20180214_110552_cms-t3-wn3009.sdfarm.kr_tsW/nanoAOD.root")
 #f = TFile("result/20180214_132212_cms-t3-wn3022.sdfarm.kr_ttsWbW/nanoAOD.root")
 # # f.Events.Print()
 
+# f = TFile("nanoAOD.root")
+
+# f.Events.Print()
+
+
 def deltaPhi(phi1,phi2):
     ## Catch if being called with two objects
     if type(phi1) != float and type(phi1) != int:
