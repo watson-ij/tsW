@@ -29,7 +29,7 @@ PYTHIA8DATA=/cms/scratch/iwatson/tsW/pythia-xml
 echo "-- Finished setup"
 pwd
 echo "-- Running Step 1"
-cmsRun ./TTbar_13TeV_TuneCUETP8M1_cfi_GEN_SIM_LambdaFilter.py $1 > step1.log 2>&1
+cmsRun ./TTbar_13TeV_TuneCUETP8M1_cfi_GEN_SIM_LamJPsiFilter.py $1 > step1.log 2>&1
 echo "-- Running Step 2"
 cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT.py > step2.log 2>&1
 echo "-- Running Step 3"

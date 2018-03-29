@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 parser = ET.XMLParser()
 parser._parser.UseForeignDTD(True)
 parser.entity['rarr'] = u'<'
-e = ET.parse('pythia-xml/ParticleData.xml', parser=parser).getroot()
+e = ET.parse('../pythia-xml/ParticleData.xml', parser=parser).getroot()
 
 #
 # Find all particles Pythia knows about within a given mass range

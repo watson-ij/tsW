@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 * Running the CMSSW generation on Batch
 
 The TTbar script used for generation can take an argument for 1 to

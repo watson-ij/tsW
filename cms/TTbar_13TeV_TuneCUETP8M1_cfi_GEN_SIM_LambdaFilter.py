@@ -117,6 +117,18 @@ MinEta = cms.untracked.double(-9999.),
 ParticleID = cms.untracked.int32(5122)
 )
 
+jpsifilter = cms.EDFilter(
+"PythiaDauVFilter",
+verbose = cms.untracked.int32(0),
+NumberDaughters = cms.untracked.int32(2),
+MotherID = cms.untracked.int32(5122),
+ParticleID = cms.untracked.int32(443),
+DaughterIDs = cms.untracked.vint32(13, -13),
+MinP = cms.untracked.vdouble(0.5,0.5),
+MinEta = cms.untracked.vdouble(-2.6, -2.6),
+MaxEta = cms.untracked.vdouble( 2.6, 2.6)
+)
+
 process.ProductionFilterSequence = cms.Sequence(process.generator*process.lambdaFilter)
 
 # Path and EndPath definitions

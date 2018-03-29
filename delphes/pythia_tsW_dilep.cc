@@ -11,7 +11,7 @@ using Pythia8::Pythia;
 
 int main()
 {
-  Pythia pythia("./pythia-xml");
+  Pythia pythia("../pythia-xml");
 
   pythia.readString("StandardModel:Vtb = 0.0");
   pythia.readString("StandardModel:Vts = 1.0");
@@ -20,19 +20,23 @@ int main()
   pythia.readString("Top:gg2ttbar = on");
   pythia.readString("Top:qqbar2ttbar = on");
 
-  pythia.readString("Main:numberOfEvents = 100");
+  pythia.readString("Main:numberOfEvents = 20000");
 
   pythia.readString("Beams:idA = 2212");
   pythia.readString("Beams:idB = 2212");
   pythia.readString("Beams:frameType = 1");
   pythia.readString("Beams:eCM = 13000");
 
+  pythia.readString("24:onMode = 0"); // turn all W decays off
+  pythia.readString("24:onIfAny = 13"); // turn on mu decay mode
+  pythia.readString("24:onIfAny = 11"); // turn on electron decay mode
+
   pythia.settings.listChanged();
   HepMC::Pythia8ToHepMC ToHepMC;
-  HepMC::IO_GenEvent ascii_io("tsW.hepmc", std::ios::out);
+  HepMC::IO_GenEvent ascii_io("tsW_dilep.hepmc", std::ios::out);
 
   pythia.init();
-  for (int iEvent = 0; iEvent < 10000; ++iEvent) {
+  for (int iEvent = 0; iEvent < 20000; ++iEvent) {
     pythia.next();
     HepMC::GenEvent* hepmcevt = new HepMC::GenEvent();
     ToHepMC.fill_next_event(pythia, hepmcevt);

@@ -1,6 +1,6 @@
 // singularity exec ~/Images/Madgraph.img make
 // singularity exec ~/Images/Madgraph.img ./pythia
-// cat tbW.hepmc | singularity exec ~/Images/Madgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tbW.root -
+// cat tsW.hepmc | singularity exec ~/Images/Madgraph.img /code/MG5_aMC_v2_6_0/Delphes/DelphesHepMC ./Cards/delphes_card_CMS.dat tsW.root -
 
 #include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/HepMC2.h"
@@ -11,29 +11,25 @@ using Pythia8::Pythia;
 
 int main()
 {
-  Pythia pythia("./pythia-xml");
+  Pythia pythia("../pythia-xml");
 
-  pythia.readString("StandardModel:Vtb = 1.0");
-  pythia.readString("StandardModel:Vts = 0.0");
+  pythia.readString("StandardModel:Vtb = 0.0");
+  pythia.readString("StandardModel:Vts = 1.0");
   pythia.readString("StandardModel:Vtd = 0.0");
 
   pythia.readString("Top:gg2ttbar = on");
   pythia.readString("Top:qqbar2ttbar = on");
 
-  pythia.readString("Main:numberOfEvents = 10000");
+  pythia.readString("Main:numberOfEvents = 100");
 
   pythia.readString("Beams:idA = 2212");
   pythia.readString("Beams:idB = 2212");
   pythia.readString("Beams:frameType = 1");
   pythia.readString("Beams:eCM = 13000");
 
-  pythia.readString("24:onMode = 0"); // turn all W decays off
-  pythia.readString("24:onIfAny = 13"); // turn on mu decay mode
-  pythia.readString("24:onIfAny = 11"); // turn on electron decay mode
-
   pythia.settings.listChanged();
   HepMC::Pythia8ToHepMC ToHepMC;
-  HepMC::IO_GenEvent ascii_io("tbW_dilep.hepmc", std::ios::out);
+  HepMC::IO_GenEvent ascii_io("tsW.hepmc", std::ios::out);
 
   pythia.init();
   for (int iEvent = 0; iEvent < 10000; ++iEvent) {
