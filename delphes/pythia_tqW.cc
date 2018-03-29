@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
   string out = string(argv[optind]);
   
-  Pythia pythia("./pythia-xml");
+  Pythia pythia("../pythia-xml");
 
   if (doS) {
     std::cout << "t->sW generation" << std::endl;
