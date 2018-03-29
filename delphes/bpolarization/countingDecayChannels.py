@@ -30,7 +30,8 @@ def getDecayChannels(*args):
             if p.D1!=-1:
                 if p.D2!=-1:
                     for i in range(p.D1,p.D2+1):
-                        daus.append(event.Particle[i].PID)
+                        if event.Particle[i].Status < 30:
+                            daus.append(event.Particle[i].PID)
                 elif p.D2==-1: daus.append(event.Particle[p.D1].PID)
             daus.sort(key=lambda x:abs(x))
             daus=tuple(daus)
