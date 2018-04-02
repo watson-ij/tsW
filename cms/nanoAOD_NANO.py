@@ -27,6 +27,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
+#    fileNames = cms.untracked.vstring('file:/cms/scratch/iwatson/tsW/cms/result/20180310_041113_cms-t3-wn3021.sdfarm.kr_tbW_lam/step3_inMINIAODSIM.root'),
     fileNames = cms.untracked.vstring('file:step3_inMINIAODSIM.root'),
     secondaryFileNames = cms.untracked.vstring()
 )

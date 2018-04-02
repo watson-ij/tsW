@@ -33,12 +33,11 @@ cmsRun ./TTbar_13TeV_TuneCUETP8M1_cfi_GEN_SIM_LamJPsiFilter.py $1 > step1.log 2>
 echo "-- Running Step 2"
 cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT.py > step2.log 2>&1
 echo "-- Running Step 3"
-cmsRun ./step3_RAW2DIGI_L1Reco_RECO_RECOSIM_EI_PAT_VALIDATION_DQM.py > step3.log 2>&1
+cmsRun ./step3a_RAW2DIGI_L1Reco_RECO_RECOSIM_EI_PAT_VALIDATION_DQM.py > step3.log 2>&1
 echo "-- Running NanoAOD"
 cmsRun nanoAOD_NANO.py > nano.log 2>&1
 rm step1.root
 rm step2.root
 # rm step3.root
-rm step3_inDQM.root
 echo "-- Done."
 date

@@ -36,8 +36,18 @@ if __name__ == "__main__":
         # print cmd
         os.system(cmd)
 
-    # Lambda b
-    flist = glob("result/*lam/nanoAOD.root")
-    cmd = "hadd -f9 cmssw_tt_lambdab.root "+" ".join(flist)
-    # print cmd
-    os.system(cmd)
+    print "Running NanoAOD" 
+    flist = glob("result/201803*ttsWbW/step3_inMINIAODSIM.root")
+    for f in flist:
+        d = os.path.dirname(f)
+        # os.system("cd %s && V0Sim step3.root" % d)
+        # os.system("hadd -f9 %s %s %s" % (d+"/nv.root", d+"/nanoAOD.root", d+"/v0sim.root"))
+        os.system("cd %s && cmsRun nanoAOD_NANO.py" % d)
+    print "Merging NanoAOD"
+    flist = glob("result/201803*ttsWbW/nanoAOD.root")
+    os.system("hadd -f9 cmssw_ttswbw_nanoAOD.root "+" ".join(flist))
+    # # Lambda b
+    # flist = glob("result/*lam/nanoAOD.root")
+    # cmd = "hadd -f9 cmssw_tt_lambdab.root "+" ".join(flist)
+    # # print cmd
+    # os.system(cmd)
