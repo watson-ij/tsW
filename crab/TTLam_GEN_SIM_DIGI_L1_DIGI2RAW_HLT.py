@@ -2,13 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: TTbar_13TeV_TuneCUETP8M1_cfi --conditions auto:phase1_2017_realistic -n 500 --era Run2_2017 --eventcontent FEVTDEBUG --relval 9000,50 -s GEN,SIM --datatier GEN-SIM --beamspot Realistic25ns13TeVEarly2017Collision --geometry DB:Extended --fileout file:step1.root
-
+# with command line options: Configuration/Generator/TTbarLepton_13TeV_TuneCUETP8M1_cfi.py --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 -n 500 --era Run2_2016 --eventcontent FEVTDEBUGHLT -s GEN,SIM,DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@relval2016 --geometry DB:Extended --datatier GEN-SIM-RAW --fileout file:ttlam.root --no_exec
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
 
-process = cms.Process('SIM',eras.Run2_2017)
+process = cms.Process('HLT',eras.Run2_2016)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -20,9 +19,13 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
-process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic25ns13TeVEarly2017Collision_cfi')
+process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic50ns13TeVCollision_cfi')
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
+process.load('Configuration.StandardSequences.Digi_cff')
+process.load('Configuration.StandardSequences.SimL1Emulator_cff')
+process.load('Configuration.StandardSequences.DigiToRaw_cff')
+process.load('HLTrigger.Configuration.HLT_25ns15e33_v4_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -39,23 +42,24 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('TTbar_13TeV_TuneCUETP8M1_cfi nevts:500'),
+    annotation = cms.untracked.string('Configuration/Generator/TTbarLepton_13TeV_TuneCUETP8M1_cfi.py nevts:500'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
 
 # Output definition
 
-process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
+process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('generation_step')
     ),
     dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN-SIM'),
+        dataTier = cms.untracked.string('GEN-SIM-RAW'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step1.root'),
-    outputCommands = process.FEVTDEBUGEventContent.outputCommands,
+    eventAutoFlushCompressedSize = cms.untracked.int32(10485760),
+    fileName = cms.untracked.string('file:ttlam.root'),
+    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
@@ -64,36 +68,25 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 process.XMLFromDBSource.label = cms.string("Extended")
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
+process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
-
-import sys
-option = int(sys.argv[2])
+process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v6', '')
 
 process.generator = cms.EDFilter("Pythia8GeneratorFilter",
     PythiaParameters = cms.PSet(
         parameterSets = cms.vstring('pythia8CommonSettings', 
             'pythia8CUEP8M1Settings', 
             'processParameters'),
-        processParameters = cms.vstring(
-                'Top:gg2ttbar = on ', 
-                'Top:qqbar2ttbar = on ', 
-                '6:m0 = 175 ',
-                "StandardModel:Vts = 1.0" if option == 1 else (
-                        "StandardModel:Vts = 0.707" if option == 2 else "StandardModel:Vts = 0.0"),
-                "StandardModel:Vtb = 0.0" if option == 1 else (
-                        "StandardModel:Vtb = 0.707" if option == 2 else "StandardModel:Vtb = 1.0"),
-                "StandardModel:Vtd = 0.0",
-                "24:onMode = 0",
-                "24:onIfAny = 13",
-                "24:onIfAny = 11",
+        processParameters = cms.vstring('Top:gg2ttbar = on ', 
+            'Top:gg2ttbar = on ', 
+            '6:m0 = 175 ', 
+            '24:onMode = off', 
+            '24:onIfAny = 11 12', 
+            '24:onIfAny = 13 14', 
+                                        '24:onIfAny = 15 16',
                 # Lambda_b -> J/Psi Lambda
                 "5122:onMode = 0",
-                "5122:onIfMatch = 3122 443",
-                # J/Psi -> Mu Mu
-                "443:onMode = 0",
-                "443:onIfMatch = 13 -13",
-        ),
+                "5122:onIfMatch = 3122 443",),
         pythia8CUEP8M1Settings = cms.vstring('Tune:pp 14', 
             'Tune:ee 7', 
             'MultipartonInteractions:pT0Ref=2.4024', 
@@ -116,6 +109,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
     pythiaPylistVerbosity = cms.untracked.int32(0)
 )
 
+
 process.lambdaFilter = cms.EDFilter(
 "PythiaFilter",
 MaxEta = cms.untracked.double(9999.),
@@ -128,27 +122,28 @@ process.ProductionFilterSequence = cms.Sequence(process.generator*process.lambda
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen)
 process.simulation_step = cms.Path(process.psim)
+process.digitisation_step = cms.Path(process.pdigi_valid)
+process.L1simulation_step = cms.Path(process.SimL1Emulator)
+process.digi2raw_step = cms.Path(process.DigiToRaw)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
-
-# Random random numbers
-from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
-randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
-randSvc.populate()
+process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.FEVTDEBUGoutput_step)
-from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
-associatePatAlgosToolsTask(process)
+process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.L1simulation_step,process.digi2raw_step)
+process.schedule.extend(process.HLTSchedule)
+process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.ProductionFilterSequence * getattr(process,path)._seq 
 
+# customisation of the process.
 
-# Customisation from command line
+# Automatic addition of the customisation function from HLTrigger.Configuration.customizeHLTforMC
+from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforFullSim 
 
-# Add early deletion of temporary data products to reduce peak memory need
-from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
-process = customiseEarlyDelete(process)
-# End adding early deletion
+#call to customisation function customizeHLTforFullSim imported from HLTrigger.Configuration.customizeHLTforMC
+process = customizeHLTforFullSim(process)
+
+# End of customisation functions
+

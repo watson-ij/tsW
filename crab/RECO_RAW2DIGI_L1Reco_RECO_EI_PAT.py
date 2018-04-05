@@ -1,3 +1,16 @@
+
+import sys
+
+if len(sys.argv) < 5:
+    print "Need INPUT RECOOUTPUT MINIAODOUTPUT"
+    exit(1)
+
+INPUT = sys.argv[2]
+RECOOUTPUT = sys.argv[3]
+MINIAODOUTPUT = sys.argv[4]
+
+print "Processing", INPUT, "into", RECOOUTPUT, MINIAODOUTPUT
+
 # Auto generated configuration file
 # using: 
 # Revision: 1.19 
@@ -26,23 +39,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
+from glob import glob
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring([
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_1.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_2.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_3.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_4.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_5.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_6.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_7.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_8.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_9.root',
-        'file:/xrootd/store/user/iawatson/TTLambdaB/ttbar_lambdab_MC_generation_test_5/180402_054032/0000/TTbarLepton_13TeV_TuneCUETP8M1_GEN_SIM_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT_10.root'
-    ]),
+    fileNames = cms.untracked.vstring('file:'+INPUT),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -65,7 +68,7 @@ process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(10485760),
-    fileName = cms.untracked.string('file:RECO.root'),
+    fileName = cms.untracked.string('file:'+RECOOUTPUT),
     outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -80,7 +83,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     dropMetaData = cms.untracked.string('ALL'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     fastCloning = cms.untracked.bool(False),
-    fileName = cms.untracked.string('file:step3_inMINIAODSIM.root'),
+    fileName = cms.untracked.string('file:'+MINIAODOUTPUT),
     outputCommands = process.MINIAODSIMEventContent.outputCommands,
     overrideInputFileSplitLevels = cms.untracked.bool(True)
 )
