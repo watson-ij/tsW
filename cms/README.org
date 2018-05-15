@@ -1,3 +1,8 @@
+* Profiling
+
+igprof -d -pp -z -o igprof.pp.gz cmsRun hadAOD17.py >& igtest.pp.log 
+igprof-analyse -d -v -g igprof.pp.gz >& igreport_perf.res
+
 * Running the CMSSW generation on Batch
 
 The TTbar script used for generation can take an argument for 1 to

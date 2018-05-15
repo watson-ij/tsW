@@ -1,0 +1,101 @@
+* Create gridpack
+
+Based on cards at:
+
+https://github.com/cms-sw/genproductions/blob/master/bin/MadGraph5_aMCatNLO/cards/production/2017/13TeV/tt01j_2l_5f_ckm_NLO_FXFX_NNLO3p1/tt01j_2l_5f_ckm_NLO_FXFX_NNLO3p1_proc_card.dat
+
+except we change the wolfenstein to allow for sufficient t>sW
+production for MG to actually produce the diagrams for it. Need to
+check there's no effect on the width.
+
+Clone genproductions, go into bin/MadGraph5_aMCatNLO, modify patches
+so loop_sm-ckm_no_b_mass has lamWS around .85 and run (in a shell w/o
+cmssw) [~/scratch/tsW/mcATnlo/genproductions/bin/MadGraph5_aMCatNLO]:
+
+#+begin_src shell
+./gridpack_generation.sh tt_bsbar ../../../tt_bsbar/
+#+end_src
+
+If you want to run with condor instead, use the submit_condor_gridpack_generation.sh script.
+
+#+begin_src shell
+./submit_condor_gridpack_generation.sh tt0j_bsbar_2l_FxFx ../../../tt0j_bsbar_2l_FxFx/
+#+end_src
+
+This will auto-download MG and run the cards to generate a gridpack (the tarball).
+
+NB if lo is satisfactory, "p p > t t~, t > s W+" works.
+
+After gridpack generation, can produce LHE files using external producer inside cmssw, eg
+https://github.com/cms-sw/genproductions/blob/master/bin/Powheg/examples/testjob/DMGG_cff.py
+
+To run the gridpack, create a new area with the same cmssw, move and unzip the tarball and run
+
+#+begin_src shell
+scram p CMSSW_7_1_20_patch3
+mv genproductions/bin/MadGraph5_aMCatNLO/tt_bsbar_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz CMSSW_7_1_20_patch3/src/
+cd CMSSW_7_1_20_patch3/src/
+tar -xaf ./tt_bsbar_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz
+./runcmsgrid.sh 1000 10 5 # <nevts> <rndm.seed> <cores>
+#+end_src
+
+Get the config:
+
+curl -s --insecure https://cms-pdmv.cern.ch/mcm/public/restapi/requests/get_fragment/TOP-RunIISummer15GS-00074 --retry 2 --create-dirs -o Configuration/GenProduction/python/TOP-RunIISummer15GS-00074-fragment.py 
+
+and generate the run script:
+
+cmsDriver.py Configuration/GenProduction/python/TOP-RunIISummer15GS-00074-fragment.py --step GEN,SIM --filein file:cmsgrid_final.lhe --fileout step1.root --datatier GEN-SIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --era Run2_2016 --mc --step GEN,SIM --no_exec --eventcontent RAWSIM
+
+then run:
+
+cmsRun TOP-RunIISummer15GS-00074-fragment_py_GEN_SIM.py
+
+* TEST
+
+try running gridpack generation with queue-type "condor"
+
+* Links
+
+On gridpack creation/use: https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO
+
+https://twiki.cern.ch/twiki/bin/view/CMS/TopMonteCarlo#Samples
+has the links to the production pages
+
+generation cards:
+https://github.com/cms-sw/genproductions/blob/c41ab29f3d86c9e53df8b0d76c12cd519adbf013/bin/MadGraph5_aMCatNLO/cards/production/13TeV/tt012j_5f_ckm_NLO_FXFX/tt012j_5f_ckm_NLO_FXFX_run_card.dat
+
+production cards:
+https://cms-pdmv.cern.ch/mcm/public/restapi/requests/get_test/TOP-RunIISummer15GS-00074
+from
+https://cms-pdmv.cern.ch/mcm/requests?dataset_name=TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8&page=0&shown=127
+
+* Finding the configuration
+
+We use TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8, so can look
+for "dataset=/TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/*/*" on
+DAS https://cmsweb.cern.ch/das/. There, we find that there's a
+GEN-SIM, so lets look for it on the prod. sys. McM (use the "Output
+Dataset" and paste the full GEN-SIM DAS name on link on the page if
+you need to):
+https://cms-pdmv.cern.ch/mcm/requests?produce=%2FTTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8%2FRunIISummer15wmLHEGS-MCRUN2_71_V1-v1%2FGEN-SIM&page=0
+
+Then, we can get the setup and test commands. They lead to this curl command:
+
+curl -s --insecure https://cms-pdmv.cern.ch/mcm/public/restapi/requests/get_fragment/TOP-RunIISummer15wmLHEGS-00121 --retry 2 --create-dirs -o Configuration/GenProduction/python/TOP-RunIISummer15wmLHEGS-00121-fragment.py 
+
+which contains the external lhe producer commands and the MC@NLO settings!
+
+To get the conditions, lets try the AODSIM https://cms-pdmv.cern.ch/mcm/requests?produce=%2FTTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8%2FRunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2%2FAODSIM&page=0&shown=127
+we see its used our LHEGS file. Lovely. We can also use it to find which pileup to use. We end up with:
+
+cmsDriver.py Configuration/GenProduction/python/TOP-RunIISummer15wmLHEGS-00121-fragment.py --fileout file:tt_bsbar_LHEGS.root --mc --eventcontent RAWSIM,LHE --datatier GEN-SIM,LHE --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --era Run2_2016 --step LHE,GEN,SIM --python_filename tt_bsbar_LHEGS.py --no_exec -n 92
+
+* MINIAOD /TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM
+On DAS:
+https://cmsweb.cern.ch/das/request?input=dataset%3D%2FTTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8%2FRunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1%2FMINIAODSIM&instance=prod%2Fglobal
+
+On McM:
+https://cms-pdmv.cern.ch/mcm/requests?dataset_name=TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8&page=0&shown=127
+
+
