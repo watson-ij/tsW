@@ -47,7 +47,8 @@ and generate the run script:
 
 cmsDriver.py Configuration/GenProduction/python/TOP-RunIISummer15GS-00074-fragment.py --step GEN,SIM --filein file:cmsgrid_final.lhe --fileout step1.root --datatier GEN-SIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --era Run2_2016 --mc --step GEN,SIM --no_exec --eventcontent RAWSIM
 
-then run:
+then *move the python file* (can't generate lhe inside CMSSW env as it
+needs to make a new CMSSW and they interfere if it runs inside!) run:
 
 cmsRun TOP-RunIISummer15GS-00074-fragment_py_GEN_SIM.py
 
@@ -97,5 +98,4 @@ https://cmsweb.cern.ch/das/request?input=dataset%3D%2FTTJets_TuneCUETP8M2T4_13Te
 
 On McM:
 https://cms-pdmv.cern.ch/mcm/requests?dataset_name=TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8&page=0&shown=127
-
 
