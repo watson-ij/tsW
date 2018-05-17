@@ -20,6 +20,7 @@ process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
+from glob import glob
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -27,8 +28,10 @@ process.maxEvents = cms.untracked.PSet(
 #process.maxEvents.input = cms.untracked.int32(1000)
 # Input source
 process.source = cms.Source("PoolSource",
-fileNames = cms.untracked.vstring('/store/user/jlee/tsW_13TeV_PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v4_reco/reco_234.root'),
-#fileNames = cms.untracked.vstring('file:../crab/RECO.root'),
+#fileNames = cms.untracked.vstring('/store/user/jlee/tsW_13TeV_PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v4_reco/reco_234.root'),
+#fileNames = cms.untracked.vstring('/store/user/jlee/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RECO/reco_052.root'),
+                                fileNames = cms.untracked.vstring('file:'+f for f in glob('/xrootd/store/user/iawatson/tt01j_bbars_2l_FxFx/GEN/1.root')),
+#fileNames = cms.untracked.vstring('file:/cms/ldap_home/jlee/run2Prod/src/reco.root'),
 secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -49,7 +52,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAODSIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('nanoAOD_jason.root'),
+    fileName = cms.untracked.string('hadAOD.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 
@@ -65,10 +68,22 @@ process.genParticleTable.variables.mass = Var("mass", float,precision=8,doc="Mas
 
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load('PhysicsTools.PatAlgos.producersLayer1.jetProducer_cff')
+process.load('PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi')
 process.load('nano.nanoAOD.hadrons_cff')
-process.hadTable.jetLabel = cms.InputTag("patJets")
+# process.hadTable.jetLabel = cms.InputTag("patJets")
 process.hadTable.vertexLabel = cms.InputTag("offlinePrimaryVertices")
-process.hadTable.pfCandLabel = cms.InputTag("particleFlow")
+
+process.pvTable =  cms.EDProducer("VertexTableProducer",
+    pvSrc = cms.InputTag("offlinePrimaryVertices"),
+    goodPvCut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
+    svSrc = cms.InputTag("inclusiveCandidateSecondaryVertices"),
+    svCut = cms.string(""),
+    dlenMin = cms.double(0),
+    dlenSigMin = cms.double(3),
+    pvName = cms.string("PV"),
+    svName = cms.string("SV"),
+    svDoc  = cms.string("secondary vertices from IVF algorithm"),
+)
 
 process.load("Validation.RecoTrack.TrackValidation_cff")
 #process.load('SimTracker.TrackerHitAssociation.tpClusterProducer_cfi')
@@ -76,11 +91,27 @@ process.load("Validation.RecoTrack.TrackValidation_cff")
 #process.load('SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi')
 process.load('nano.nanoAOD.hadTruth_cff')
 
-process.p = cms.Path(process.makePatJets+process.hadTables+process.genParticleTable
+process.load("PhysicsTools.PatAlgos.slimming.slimming_cff")
+from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppies
+makePuppies(process)
+process.packedPFSeq = cms.Sequence(
+    process.offlineSlimmedPrimaryVertices+
+    process.primaryVertexAssociation+
+    process.puppi+process.pfNoLepPUPPI+process.puppiNoLep+
+    cms.Sequence(process.packedPFCandidatesTask)+
+    cms.Sequence(process.genParticlesTask)+
+    cms.Sequence(process.slimmedJets))
+process.selectedPatJets.cut = cms.string("pt > 10")
+
+process.p = cms.Path(process.makePatJets+cms.Sequence(process.selectedPatJets)
+                     +cms.Sequence(process.packedPFSeq)
+                         +process.hadTables+process.genParticleTable
                          +process.mix+process.tracksValidationTruth
                          #+process.tpClusterProducer+process.quickTrackAssociatorByHits
                          #+process.trackingParticleRecoTrackAsssociation
-                         +process.hadTruthTables)
+                         +process.hadTruthTables
+	                 +process.pvTable
+		    )
 
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.NANOAODSIMoutput_step = cms.EndPath(process.NANOAODSIMoutput)
