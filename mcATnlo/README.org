@@ -1,4 +1,4 @@
-* Create gridpack
+* Create gridpack and run
 
 Based on cards at:
 
@@ -39,7 +39,7 @@ tar -xaf ./tt_bsbar_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz
 ./runcmsgrid.sh 1000 10 5 # <nevts> <rndm.seed> <cores>
 #+end_src
 
-Get the config:
+Setup a new CMS, CMSSW_8_0_30 (should be 21 really but whatevs). Get the config:
 
 curl -s --insecure https://cms-pdmv.cern.ch/mcm/public/restapi/requests/get_fragment/TOP-RunIISummer15GS-00074 --retry 2 --create-dirs -o Configuration/GenProduction/python/TOP-RunIISummer15GS-00074-fragment.py 
 
@@ -52,9 +52,29 @@ needs to make a new CMSSW and they interfere if it runs inside!) run:
 
 cmsRun TOP-RunIISummer15GS-00074-fragment_py_GEN_SIM.py
 
-* TEST
+Then, can try running 
 
-try running gridpack generation with queue-type "condor"
+root -b -l -q 'plotdjr.C("tt_bsbar_LHEGS.root", "dr.png")'
+
+For the DRJ distributions.
+
+Then, based on
+https://cms-pdmv.cern.ch/mcm/public/restapi/requests/get_setup/TOP-RunIISummer16DR80Premix-00262
+we can run the DIGI steps (for no mixing):
+
+cmsDriver.py step2  --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 -s DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@frozen2016 --datatier GEN-SIM-DIGI-RAW --geometry DB:Extended --era Run2_2016 --eventcontent FEVTDEBUGHLT --filein file:step1.root --fileout file:step2.root --no_exec
+
+move to ...2016.py, and the output from LHEGS to step1.root then run
+
+cmsRun step2_DIGI_L1_DIGI2RAW_HLT_2016.py
+
+And finally, to get MiniAOD and a debugging RECO,
+
+cmsDriver.py step3 --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 -n -1 --era Run2_2016 --eventcontent FEVTDEBUGHLT,MINIAODSIM --runUnscheduled -s RAW2DIGI,L1Reco,RECO,EI,PAT --datatier RECODEBUG,MINIAODSIM --geometry DB:Extended --filein file:step2.root --fileout file:step3.root --no_exec
+
+cmsRun step3_RAW2DIGI_L1Reco_RECO_EI_PAT_2016.py
+
+et voila!
 
 * Links
 

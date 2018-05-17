@@ -25,7 +25,7 @@ process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-nEvents = 200
+nEvents = 500
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(nEvents)
 )
@@ -55,19 +55,8 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    fileName = cms.untracked.string('file:tt_bsbar_LHEGS.root'),
+    fileName = cms.untracked.string('file:step1.root'),
     outputCommands = process.RAWSIMEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
-
-process.LHEoutput = cms.OutputModule("PoolOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('LHE'),
-        filterName = cms.untracked.string('')
-    ),
-    eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    fileName = cms.untracked.string('file:tt0j_bsbar_2l_FxFx_LHEGS_inLHE.root'),
-    outputCommands = process.LHEEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
@@ -102,7 +91,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:doFxFx = on', 
             'JetMatching:qCutME = 20.', 
             'JetMatching:nQmatch = 5', 
-            'JetMatching:nJetMax = 2', 
+            'JetMatching:nJetMax = 0', 
             'TimeShower:mMaxGamma = 1.0', 
             'TimeShower:MEcorrections = on'),
         pythia8CUEP8M1Settings = cms.vstring('Tune:pp 14', 
@@ -158,10 +147,9 @@ process.simulation_step = cms.Path(process.psim)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RAWSIMoutput_step = cms.EndPath(process.RAWSIMoutput)
-process.LHEoutput_step = cms.EndPath(process.LHEoutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.lhe_step,process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.RAWSIMoutput_step,process.LHEoutput_step)
+process.schedule = cms.Schedule(process.lhe_step,process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.RAWSIMoutput_step)
 # filter all path with the production filter sequence
 for path in process.paths:
 	if path in ['lhe_step']: continue
