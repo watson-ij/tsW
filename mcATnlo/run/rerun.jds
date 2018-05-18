@@ -1,0 +1,11 @@
+executable = rerun.sh
+universe = vanilla
+output = log/runCMS-out.txt
+error = log/runCMS-error.txt
+log = log/runCMS-log.txt
+
+should_transfer_files = NO
+
+requirements = (Machine =!= "cms-gpu01.sdfarm.kr")
+
+queue

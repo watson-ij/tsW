@@ -121,21 +121,23 @@ void makeplot(const char *name, TTree *tree, TCut weight, const char *drawstring
   legend->Draw();
 }
 
-void plotdjr(const TString & infile, const TString & outfile) {
+void plotdjr(const TString & infile1, const TString & outfile, const char * in2=0) {
  
   gSystem->Load("libFWCoreFWLite.so");  
   FWLiteEnabler::enable();  
   TH1::SetDefaultSumw2();
   
   TChain *tree = new TChain("Events");
-  tree->Add(infile);
+  tree->Add(infile1);
+  if (in2)
+    tree->Add(in2);
   
   tree->SetAlias("GenEvent","GenEventInfoProduct_generator__SIM.obj");
-  tree->SetAlias("LHEEvent","LHEEventProduct_externalLHEProducer__LHE.obj");
+  tree->SetAlias("LHEEvent","LHEEventProduct_externalLHEProducer__SIM.obj");
 
-  tree->SetBranchStatus("*", false);
-  tree->SetBranchStatus("GenEventInfoProduct_generator__SIM.obj", true);
-  tree->SetBranchStatus("LHEEventProduct_externalLHEProducer__LHE.obj", true);
+  // tree->SetBranchStatus("*", false);
+  // tree->SetBranchStatus("GenEventInfoProduct_generator__SIM.obj", true);
+  // tree->SetBranchStatus("LHEEventProduct_externalLHEProducer__SIM.obj", true);
  
   TCut weight = "GenEvent.weight()";
   int nbins = 50.;
