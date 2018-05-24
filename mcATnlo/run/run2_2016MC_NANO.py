@@ -30,7 +30,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring('file:10D3267C-6FBD-E611-AED8-70106F48BC1E.root'),
-    fileNames = cms.untracked.vstring("root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawatson/"+sys.argv[-1]),
+    fileNames = cms.untracked.vstring("file:/home/iwatson/tsW/mcATnlo/data/"+sys.argv[-1]),
     secondaryFileNames = cms.untracked.vstring()
 )
 sys.argv = sys.argv[:-1]

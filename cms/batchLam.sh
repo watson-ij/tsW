@@ -4,7 +4,7 @@ date
 hostname
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src
+cd /home/iwatson/tsW//cms/CMSSW_9_4_4/src
 eval `scramv1 runtime -sh`
 cd -
 
@@ -20,11 +20,11 @@ if [[ $1 == "0" ]]; then
     TDIR=./result/`date +%Y%m%d_%H%M%S`_`hostname`_tbW_lam
 fi
 mkdir -p $TDIR
-cp /cms/scratch/iwatson/tsW/cms/*py $TDIR
+cp /home/iwatson/tsW//cms/*py $TDIR
 cd $TDIR
 
-SRT_PYTHIA8DATA_SCRAMRTDEL=/cms/scratch/iwatson/tsW/pythia-xml
-PYTHIA8DATA=/cms/scratch/iwatson/tsW/pythia-xml
+SRT_PYTHIA8DATA_SCRAMRTDEL=/home/iwatson/tsW//pythia-xml
+PYTHIA8DATA=/home/iwatson/tsW/pythia-xml
 
 echo "-- Finished setup"
 pwd

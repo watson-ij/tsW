@@ -51,7 +51,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAODSIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('hadAOD.root'),
+    fileName = cms.untracked.string('nanoAOD_AOD.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 
@@ -88,13 +88,14 @@ process.load("Validation.RecoTrack.TrackValidation_cff")
 #process.load('SimTracker.TrackerHitAssociation.tpClusterProducer_cfi')
 #process.load('SimTracker.TrackAssociatorProducers.quickTrackAssociatorByHits_cfi')
 #process.load('SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi')
-process.load('nano.nanoAOD.hadTruth_cff')
+#process.load('nano.nanoAOD.hadTruth_cff')
 
-process.p = cms.Path(process.makePatJets+process.hadTables+process.genParticleTable
+process.p = cms.Path(process.makePatJets+process.hadTables
+                         #+process.genParticleTable
                          +process.mix+process.tracksValidationTruth
                          #+process.tpClusterProducer+process.quickTrackAssociatorByHits
                          #+process.trackingParticleRecoTrackAsssociation
-                         +process.hadTruthTables
+#                         +process.hadTruthTables
 	                 +process.pvTable
 		    )
 

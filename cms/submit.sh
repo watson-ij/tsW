@@ -2,6 +2,6 @@
 
 for i in {1..100}; do
     echo $i
-    condor_submit tsWbatch_Lam.jds
+    condor_submit tsWbatch.jds
     sleep 5
 done
