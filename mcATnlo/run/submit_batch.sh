@@ -1,14 +1,18 @@
 #!/bin/sh
 
-PROCESS=tt012j_bbars_2l_FxFx_AOD
+PROCESS=tt01j_bbar_1lp_FxFx_AOD
 
 mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/LOG
 mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/GEN
 mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/MINIAODSIM
 mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/HADAOD
+mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/HADTRUTHAOD
 mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/NANOAOD
 mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/AODSIM
 
-for i in {1..25}; do
+chmod o+rwx /home/iwatson/tsW/mcATnlo/data/$PROCESS/
+chmod o+rwx /home/iwatson/tsW/mcATnlo/data/$PROCESS/*
+
+for i in {51..100}; do
     condor_submit ${PROCESS}_batch.jds -append "arguments = $i"
 done
