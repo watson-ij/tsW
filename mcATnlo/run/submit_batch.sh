@@ -18,6 +18,11 @@ mkdir -p $BASEP/$PROCESS/HADTRUTHAOD
 mkdir -p $BASEP/$PROCESS/NANOAOD
 mkdir -p $BASEP/$PROCESS/AODSIM
 
+if [ "$HOSTNAME" = gate.sscc.uos.ac.kr ]; then
+    chmod o+rwx $BASEP/$PROCESS/
+    chmod o+rwx $BASEP/$PROCESS/*
+fi
+
 for i in {10001..10002}; do
     condor_submit batch.jds -append "arguments = $BASE $PROCESS $i $XRDCP"
 done
