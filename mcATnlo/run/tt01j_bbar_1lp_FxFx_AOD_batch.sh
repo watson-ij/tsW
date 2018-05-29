@@ -25,7 +25,7 @@ pwd
 echo "-- Running Step 1"
 cmsRun ./tt01j_bbar_1lp_FxFx_LHEGS.py > step1.log 2>&1
 echo "-- Running Step 2"
-cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT_2016.py > step2.log 2>&1
+cmsRun ./step2_DIGIPREMIX.py > step2.log 2>&1
 echo "-- Running Step 3"
 cmsRun ./step3AOD_RAW2DIGI_L1Reco_RECO_EI_PAT_2016.py > step3.log 2>&1
 

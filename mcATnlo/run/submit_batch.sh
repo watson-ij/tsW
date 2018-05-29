@@ -13,6 +13,6 @@ mkdir -p /home/iwatson/tsW/mcATnlo/data/$PROCESS/AODSIM
 chmod o+rwx /home/iwatson/tsW/mcATnlo/data/$PROCESS/
 chmod o+rwx /home/iwatson/tsW/mcATnlo/data/$PROCESS/*
 
-for i in {51..100}; do
+for i in {1001..1002}; do
     condor_submit ${PROCESS}_batch.jds -append "arguments = $i"
 done

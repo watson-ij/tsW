@@ -5,13 +5,14 @@ import subprocess
 import os
 import time
 
-dataset = "tt012j_bbars_2l_FxFx_AOD"
+dataset = "tt01j_bbar_1lp_FxFx_AOD"
 
-torun = glob("/home/iwatson/tsW/mcATnlo/data/%s/MINIAODSIM/*.root" % dataset)
+torun = glob("/home/iwatson/tsW/mcATnlo/data/%s/GEN/*.root" % dataset)
 max_processes = 15
 run_on_batch = False
-delete_had = True
-delete_nano = True
+delete_hadtruth = True
+delete_had = False
+delete_nano = False
 
 command = "./rerun.sh"
 processes = set()
@@ -20,6 +21,9 @@ print "---- RUNNING ----"
 
 if delete_had:
     os.system("rm -f /home/iwatson/tsW/mcATnlo/data/%s/HADAOD/*.root" % dataset)
+
+if delete_hadtruth:
+    os.system("rm -f /home/iwatson/tsW/mcATnlo/data/%s/HADTRUTHAOD/*.root" % dataset)
 
 if delete_nano:
     os.system("rm -f /home/iwatson/tsW/mcATnlo/data/%s/NANOAOD/*.root" % dataset)
