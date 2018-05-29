@@ -1,14 +1,23 @@
 #!/bin/sh
 
-PROCESS=tt01j_bsbar_2l_FxFx_AOD
+BASEP="/xrootd/store/user/iawatson"
+BASE="root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawatson"
+XRDCP=1
 
-mkdir -p /xrootd/store/user/iawatson/$PROCESS/LOG
-mkdir -p /xrootd/store/user/iawatson/$PROCESS/GEN
-mkdir -p /xrootd/store/user/iawatson/$PROCESS/MINIAODSIM
-mkdir -p /xrootd/store/user/iawatson/$PROCESS/HADAOD
-mkdir -p /xrootd/store/user/iawatson/$PROCESS/NANOAOD
-mkdir -p /xrootd/store/user/iawatson/$PROCESS/AOD
+#BASEP=/home/iwatson/tsW/mcATnlo/data
+#BASE=/home/iwatson/tsW/mcATnlo/data
+#XRDCP=0
 
-for i in {1001..1010}; do
-    condor_submit ${PROCESS}_batch.jds -append "arguments = $i"
+PROCESS="tt01j_bsbar_2l_FxFx_AOD"
+
+mkdir -p $BASEP/$PROCESS/LOG
+mkdir -p $BASEP/$PROCESS/GEN
+mkdir -p $BASEP/$PROCESS/MINIAODSIM
+mkdir -p $BASEP/$PROCESS/HADAOD
+mkdir -p $BASEP/$PROCESS/HADTRUTHAOD
+mkdir -p $BASEP/$PROCESS/NANOAOD
+mkdir -p $BASEP/$PROCESS/AOD
+
+for i in {10001..10002}; do
+    condor_submit batch.jds -append "arguments = $BASE $PROCESS $i $XRDCP"
 done

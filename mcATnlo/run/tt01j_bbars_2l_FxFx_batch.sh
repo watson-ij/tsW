@@ -38,14 +38,14 @@ xrdcp step3.log root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawatson/tt01j_b
 xrdcp step3.root root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawatson/tt01j_bbars_2l_FxFx/GEN/$1.root
 xrdcp step3_inMINIAODSIM.root root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawatson/tt01j_bbars_2l_FxFx/MINIAODSIM/$1.root
 
-cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src
+cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src
 eval `scramv1 runtime -sh`
 eval `scramv1 runtime -sh`
 cd -
 
 echo "-- Running NANOAOD"
 
-cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src/nano/nanoAOD/prod/run2_2016MC_NANO.py .
+cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src/nano/nanoAOD/prod/run2_2016MC_NANO.py .
 sed -i.bak 's/fileNames/fileNames = cms.untracked.vstring("file:step3_inMINIAODSIM.root"),   # /' run2_2016MC_NANO.py
 cmsRun ./run2_2016MC_NANO.py > step4.log 2>&1
 
@@ -54,7 +54,7 @@ xrdcp run2_2016MC_NANO.root root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawa
 
 echo "-- Running HADAOD"
 
-cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src/nano/nanoAOD/prod/hadAOD.py .
+cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src/nano/nanoAOD/prod/hadAOD.py .
 sed -i.bak 's/fileNames/fileNames = cms.untracked.vstring("file:step3.root"),   # /' hadAOD.py
 cmsRun ./hadAOD.py > step5.log 2>&1
 

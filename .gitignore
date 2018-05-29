@@ -3,3 +3,7 @@
 *.pyc
 /py.py
 /cms/result
+/cms/ig*
+/cms/gridpack
+/cms/log
+/mcATnlo/run/*xz

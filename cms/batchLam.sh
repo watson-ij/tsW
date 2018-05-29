@@ -4,7 +4,7 @@ date
 hostname
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src
+cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src
 eval `scramv1 runtime -sh`
 cd -
 

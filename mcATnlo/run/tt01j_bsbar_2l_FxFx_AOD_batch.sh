@@ -25,7 +25,8 @@ pwd
 echo "-- Running Step 1"
 cmsRun ./tt01j_bsbar_2l_FxFx_LHEGS.py > step1.log 2>&1
 echo "-- Running Step 2"
-cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT_2016.py > step2.log 2>&1
+# cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT_2016.py > step2.log 2>&1
+cmsRun ./step2_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT.py > step2.log 2>&1
 echo "-- Running Step 3"
 cmsRun ./step3AOD_RAW2DIGI_L1Reco_RECO_EI_PAT_2016.py > step3.log 2>&1
 
@@ -38,14 +39,14 @@ xrdcp step3_inAODSIM.root root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawats
 rm step1.root
 rm step2.root
 
-cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src
+cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src
 eval `scramv1 runtime -sh` 2>&1 > /dev/null # This will fail
 eval `scramv1 runtime -sh`
 cd -
 
 echo "-- Running NANOAOD"
 
-cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src/nano/nanoAOD/prod/run2_2016MC_NANO.py .
+cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src/nano/nanoAOD/prod/run2_2016MC_NANO.py .
 sed -i.bak 's/fileNames/fileNames = cms.untracked.vstring("file:step3_inAODSIM.root"),   # /' run2_2016MC_NANO.py
 cmsRun ./run2_2016MC_NANO.py > step4.log 2>&1
 
@@ -56,7 +57,7 @@ xrdcp run2_2016MC_NANO.root root://cms-xrdr.sdfarm.kr:1094///xrd/store/user/iawa
 
 echo "-- Running HADAOD"
 
-cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_4/src/nano/nanoAOD/prod/hadAOD.py .
+cp /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src/nano/nanoAOD/prod/hadAOD.py .
 sed -i.bak 's/fileNames/fileNames = cms.untracked.vstring("file:step3.root"),   # /' hadAOD.py
 cmsRun ./hadAOD.py > step5.log 2>&1
 

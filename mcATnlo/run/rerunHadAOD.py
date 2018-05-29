@@ -5,12 +5,12 @@ import subprocess
 import os
 import time
 
-dataset = "tt01j_bsbar_2l_FxFx"
+dataset = "tt01j_bsbar_2l_FxFx_AOD"
 
-torun = glob("/xrootd/store/user/iawatson/%s/MINIAODSIM/*.root" % dataset)
+torun = glob("/xrootd/store/user/iawatson/%s/GEN/*.root" % dataset)
 max_processes = 8
 run_on_batch = True
-delete_had = True
+delete_had = False
 delete_nano = False
 
 command = "./rerun.sh"
