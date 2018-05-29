@@ -10,6 +10,7 @@ dataset = "tt01j_bsbar_2l_FxFx_AOD"
 torun = glob("/xrootd/store/user/iawatson/%s/GEN/*.root" % dataset)
 max_processes = 8
 run_on_batch = True
+delete_hadtruth = True
 delete_had = False
 delete_nano = False
 
@@ -20,6 +21,9 @@ print "---- RUNNING ----"
 
 if delete_had:
     os.system("rm -f /xrootd/store/user/iawatson/%s/HADAOD/*.root" % dataset)
+
+if delete_hadtruth:
+    os.system("rm -f /xrootd/store/user/iawatson/%s/HADTRUTHAOD/*.root" % dataset)
 
 if delete_nano:
     os.system("rm -f /xrootd/store/user/iawatson/%s/NANOAOD/*.root" % dataset)

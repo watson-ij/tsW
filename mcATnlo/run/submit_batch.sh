@@ -16,7 +16,7 @@ mkdir -p $BASEP/$PROCESS/MINIAODSIM
 mkdir -p $BASEP/$PROCESS/HADAOD
 mkdir -p $BASEP/$PROCESS/HADTRUTHAOD
 mkdir -p $BASEP/$PROCESS/NANOAOD
-mkdir -p $BASEP/$PROCESS/AOD
+mkdir -p $BASEP/$PROCESS/AODSIM
 
 for i in {10001..10002}; do
     condor_submit batch.jds -append "arguments = $BASE $PROCESS $i $XRDCP"
