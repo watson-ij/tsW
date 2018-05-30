@@ -8,7 +8,7 @@ XRDCP=1
 #BASE=/home/iwatson/tsW/mcATnlo/data
 #XRDCP=0
 
-PROCESS="tt01j_bsbar_2l_FxFx_AOD"
+PROCESS="tt012j_bbars_2l_FxFx"
 
 mkdir -p $BASEP/$PROCESS/LOG
 mkdir -p $BASEP/$PROCESS/GEN
@@ -23,6 +23,6 @@ if [ "$HOSTNAME" = gate.sscc.uos.ac.kr ]; then
     chmod o+rwx $BASEP/$PROCESS/*
 fi
 
-for i in {10001..10002}; do
+for i in {1..25}; do
     condor_submit batch.jds -append "arguments = $BASE $PROCESS $i $XRDCP"
 done

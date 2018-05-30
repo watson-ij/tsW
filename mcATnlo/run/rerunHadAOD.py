@@ -5,12 +5,12 @@ import subprocess
 import os
 import time
 
-dataset = "tt01j_bsbar_2l_FxFx_AOD"
+dataset = "tt012j_bsbar_2l_FxFx"
 
 torun = glob("/xrootd/store/user/iawatson/%s/GEN/*.root" % dataset)
 max_processes = 8
 run_on_batch = True
-delete_hadtruth = True
+delete_hadtruth = False
 delete_had = False
 delete_nano = False
 

@@ -35,9 +35,10 @@ ${CP} test ${BASE}/${PROCESS}/LOG/${SUFFIX}.start
 echo "-- Finished setup"
 pwd
 echo "-- Running Step 1"
-cmsRun ./${PROCESS}_LHEGS.py > step1.log 2>&1
+cmsRun ./LHEGS.py ${PROCESS} > step1.log 2>&1
 echo "-- Running Step 2"
-cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT_2016.py > step2.log 2>&1
+# cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT_2016.py > step2.log 2>&1
+cmsRun ./step2_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT.py > step2.log 2>&1
 echo "-- Running Step 3"
 cmsRun ./step3AOD_RAW2DIGI_L1Reco_RECO_EI_PAT_2016.py > step3.log 2>&1
 
@@ -49,6 +50,7 @@ ${CP} step2.log ${BASE}/${PROCESS}/LOG/${SUFFIX}_step2.log
 ${CP} step3.log ${BASE}/${PROCESS}/LOG/${SUFFIX}_step3.log
 ${CP} step3.root ${BASE}/${PROCESS}/GEN/${SUFFIX}.root
 ${CP} step3_inMINIAODSIM.root ${BASE}/${PROCESS}/MINIAODSIM/${SUFFIX}.root
+${CP} step3_inAODSIM.root ${BASE}/${PROCESS}/AODSIM/${SUFFIX}.root
 
 cd /cms/scratch/iwatson/tsW/cms/CMSSW_9_4_6_patch1/src
 eval `scramv1 runtime -sh`
@@ -57,7 +59,7 @@ cd -
 
 
 echo `pwd`
-cmsRun /cms/scratch/iwatson/tsW/mcATnlo/run/run2_2016MC_NANO.py tt01j_bbar_1lp_FxFx_AOD/MINIAODSIM/$1.root > $1.nano.log 2>&1
+cmsRun /cms/scratch/iwatson/tsW/mcATnlo/run/run2_2016MC_NANO.py ${PROCESS}/MINIAODSIM/${SUFFIX}.root > ${SUFFIX}.nano.log 2>&1
 ${CP} nano*root ${BASE}/${PROCESS}/NANOAOD/${SUFFIX}.root
 ${CP} ${SUFFIX}.nano.log ${BASE}/${PROCESS}/LOG/${SUFFIX}.nano.log
 rm nano*root
