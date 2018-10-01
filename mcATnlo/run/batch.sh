@@ -35,7 +35,7 @@ ${CP} test ${BASE}/${PROCESS}/LOG/${SUFFIX}.start
 echo "-- Finished setup"
 pwd
 echo "-- Running Step 1"
-cmsRun ./LHEGS.py ${PROCESS} > step1.log 2>&1
+cmsRun ./LHEGS.py ${PROCESS} ${SUFFIX} > step1.log 2>&1
 echo "-- Running Step 2"
 # cmsRun ./step2_DIGI_L1_DIGI2RAW_HLT_2016.py > step2.log 2>&1
 cmsRun ./step2_DIGIPREMIX_S2_DATAMIX_L1_DIGI2RAW_HLT.py > step2.log 2>&1

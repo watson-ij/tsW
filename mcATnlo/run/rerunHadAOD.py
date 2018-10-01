@@ -5,14 +5,15 @@ import subprocess
 import os
 import time
 
-dataset = "tt012j_bsbar_2l_FxFx"
+dataset = "tt012j_bbars_2l_FxFx"
 
 torun = glob("/xrootd/store/user/iawatson/%s/GEN/*.root" % dataset)
-max_processes = 8
-run_on_batch = True
+max_processes = 15
+run_on_batch = False
 delete_hadtruth = False
 delete_had = False
-delete_nano = False
+delete_nano = True
+delete_log = True
 
 command = "./rerun.sh"
 processes = set()
@@ -28,15 +29,18 @@ if delete_hadtruth:
 if delete_nano:
     os.system("rm -f /xrootd/store/user/iawatson/%s/NANOAOD/*.root" % dataset)
 
+if delete_log:
+    os.system("rm -f /xrootd/store/user/iawatson/%s/LOG/*" % dataset)
+
 for name in torun:
+    n = name.split('/')[-1].split('.')[0]
     if run_on_batch:
-        n = name.split('/')[-1].split('.')[0]
         script = 'condor_submit -append arguments="%s %s" rerun.jds' % (dataset, n)
         print script
         os.system(script)
     else:
         # Run locally
-        processes.add(subprocess.Popen([command, name]))
+        processes.add(subprocess.Popen([command, dataset, n]))
         if len(processes) >= max_processes:
             os.wait()
             processes.difference_update([

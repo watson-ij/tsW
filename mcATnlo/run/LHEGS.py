@@ -30,6 +30,29 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(nEvents)
 )
 
+import sys
+seed = sys.argv[-1]
+sys.argv = sys.argv[:-1]
+print("Setting seed Seed", seed)
+process.RandomNumberGeneratorService = cms.Service(
+        "RandomNumberGeneratorService",        
+        # This is to initialize the random engine of the source
+        generator = cms.PSet(
+                initialSeed = cms.untracked.uint32(int(seed)),
+                engineName = cms.untracked.string('TRandom3') ),
+        externalLHEProducer = cms.PSet(
+                initialSeed = cms.untracked.uint32(int(seed)),
+                engineName = cms.untracked.string('TRandom3') ),
+        VtxSmeared = cms.PSet(
+                initialSeed = cms.untracked.uint32(int(seed)),
+                engineName = cms.untracked.string('TRandom3')
+        ),
+g4SimHits = cms.PSet(
+    initialSeed = cms.untracked.uint32(int(seed)),
+    engineName = cms.untracked.string('TRandom3')
+  ),
+)
+
 # Input source
 process.source = cms.Source("EmptySource")
 
@@ -91,7 +114,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:doFxFx = on', 
             'JetMatching:qCutME = 20.', 
             'JetMatching:nQmatch = 5', 
-            'JetMatching:nJetMax = 1', 
+            'JetMatching:nJetMax = 2', 
             'TimeShower:mMaxGamma = 1.0', 
             'TimeShower:MEcorrections = on'),
         pythia8CUEP8M1Settings = cms.vstring('Tune:pp 14', 

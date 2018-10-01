@@ -102,8 +102,8 @@ void makeplot(const char *name, TTree *tree, TCut weight, const char *drawstring
   tree->Draw(TString::Format("%s>>%s",drawstring,hmult0->GetName()),weight*mult0,"goff");
   tree->Draw(TString::Format("%s>>%s",drawstring,hmult1->GetName()),weight*mult1,"goff");
   tree->Draw(TString::Format("%s>>%s",drawstring,hmult2->GetName()),weight*mult2,"goff");
-  tree->Draw(TString::Format("%s>>%s",drawstring,hmult3->GetName()),weight*mult3,"goff");  
-  tree->Draw(TString::Format("%s>>%s",drawstring,hmult4->GetName()),weight*mult4,"goff");
+  // tree->Draw(TString::Format("%s>>%s",drawstring,hmult3->GetName()),weight*mult3,"goff");  
+  // tree->Draw(TString::Format("%s>>%s",drawstring,hmult4->GetName()),weight*mult4,"goff");
 
   hall->GetXaxis()->SetTitle(xlabel);
 
@@ -114,8 +114,8 @@ void makeplot(const char *name, TTree *tree, TCut weight, const char *drawstring
   hmult0->Draw("EHISTSAME");
   hmult1->Draw("EHISTSAME");
   hmult2->Draw("EHISTSAME");
-  hmult3->Draw("EHISTSAME");
-  hmult4->Draw("EHISTSAME");
+  // hmult3->Draw("EHISTSAME");
+  // hmult4->Draw("EHISTSAME");
 
   gStyle->SetOptStat(0);
   legend->Draw();
@@ -123,7 +123,7 @@ void makeplot(const char *name, TTree *tree, TCut weight, const char *drawstring
 
 void plotdjr(const TString & infile1, const TString & outfile, const char * in2=0) {
  
-  gSystem->Load("libFWCoreFWLite.so");  
+  gSystem->Load("libFWCoreFWLite.so");
   FWLiteEnabler::enable();  
   TH1::SetDefaultSumw2();
   
@@ -135,9 +135,9 @@ void plotdjr(const TString & infile1, const TString & outfile, const char * in2=
   tree->SetAlias("GenEvent","GenEventInfoProduct_generator__SIM.obj");
   tree->SetAlias("LHEEvent","LHEEventProduct_externalLHEProducer__SIM.obj");
 
-  // tree->SetBranchStatus("*", false);
-  // tree->SetBranchStatus("GenEventInfoProduct_generator__SIM.obj", true);
-  // tree->SetBranchStatus("LHEEventProduct_externalLHEProducer__SIM.obj", true);
+  tree->SetBranchStatus("*", false);
+  tree->SetBranchStatus("GenEventInfoProduct_generator__SIM.obj", true);
+  tree->SetBranchStatus("LHEEventProduct_externalLHEProducer__SIM.obj", true);
  
   TCut weight = "GenEvent.weight()";
   int nbins = 50.;
@@ -147,7 +147,7 @@ void plotdjr(const TString & infile1, const TString & outfile, const char * in2=
   //0 is for NLO with FXFX merging; 
   //1 is for LO with MLM; 
   //2 is for LO with MLM (plotting partons after excluding non-matched partons in wbb/vbf type processes)
-  int typeMC = 2;
+  int typeMC = 0;
   
   TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
   TPad *pad[5];
